@@ -15,6 +15,7 @@ import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/action_bar_widget.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/animal_cart_widget.dart';
+import 'package:alefakaltawinea_animals_app/utils/my_widgets/delete_card_popup.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/laoding_view.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/transition_image.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
@@ -22,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/my_widgets/edite_card_popup.dart';
 import '../cart/add_cart_screen.dart';
 import '../cart/my_carts_model.dart';
 import '../cart/provider/cart_provider.dart';
@@ -643,7 +645,7 @@ class _ProfileScreenState extends State<ProfileScreen> with InputValidationMixin
   }
   Widget _myCartsScreen(){
     return Column(children: [
-      Expanded(child: Container(
+      Expanded(child: cartProvider!.isLoading?LoadingProgress():Container(
         child: ListView.builder(itemBuilder: (context,index){
           return _cartItem(index) ;
         },
@@ -655,7 +657,16 @@ class _ProfileScreenState extends State<ProfileScreen> with InputValidationMixin
   }
   Widget _cartItem(int index){
     return Directionality(textDirection: TextDirection.ltr, child:
-    AnimalCartWidget(cart: cartProvider!.myCarts[index],));
+    AnimalCartWidget(cart: cartProvider!.myCarts[index],enableEdite: true,
+    onDelete: (){
+      MyUtils.basePopup(context, body: DeleteCradPopupScreen(content:tr("delete_card_text"),onOkPressed: (){
+        cartProvider!.deleteCard(cartProvider!.myCarts[index].id??0);
+        Navigator.pop(context);
+      },));
+    },
+    onEdite: (){
+      MyUtils.basePopup(context, body: EditeCartScreen(myCart:cartProvider!.myCarts[index],));
+    },));
   }
 Widget _noCarts(){
     return Container(

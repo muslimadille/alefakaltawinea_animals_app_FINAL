@@ -104,8 +104,9 @@ class AdoptionProviderModel with ChangeNotifier{
     MyResponse<dynamic> response =
     await adoptionApi.setAdoptionAnimal(body);
     if (response.status == Apis.CODE_SUCCESS){
+      await getAnimals(categoryId,1);
+      await getMyAnimals();
       setIsLoading(false);
-      getAnimals(categoryId,1);
       Navigator.of(ctx).pop();
       await Fluttertoast.showToast(msg: "${response.msg}");
     }else if(response.status == Apis.CODE_SUCCESS &&response.data==null){

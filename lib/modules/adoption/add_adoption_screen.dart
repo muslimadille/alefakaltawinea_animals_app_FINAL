@@ -12,6 +12,7 @@ import 'package:alefakaltawinea_animals_app/utils/my_utils/input%20_validation_m
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myColors.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/resources.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/action_bar_widget.dart';
+import 'package:alefakaltawinea_animals_app/utils/my_widgets/laoding_view.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/transition_image.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -93,10 +94,9 @@ class _AddAdoptionScreenState extends State<AddAdoptionScreen> with InputValidat
         children: [
           ActionBarWidget("", context,backgroundColor: C.ADAPTION_COLOR,),
           Expanded(
-              child: Container(
+              child: adoptionProviderModel!.isLoading?LoadingProgress():Container(
                   color: C.ADAPTION_COLOR,
                   child: Stack(
-
                     alignment: AlignmentDirectional.topCenter,
                     children: [
                       _whiteContainer(),
@@ -488,7 +488,7 @@ class _AddAdoptionScreenState extends State<AddAdoptionScreen> with InputValidat
 
 Widget _addBtn(){
     return InkWell(onTap: () async {
-      if(_cLassImage!=null){
+      if(_cLassImage!=null&&!adoptionProviderModel!.isLoading){
         if (_registerFormGlobalKey.currentState!.validate()) {
           _registerFormGlobalKey.currentState!.save();
           MultipartFile mFile = await MultipartFile.fromFile(

@@ -21,6 +21,7 @@ class SettingsProvider with ChangeNotifier{
     if (response.status == Apis.CODE_SUCCESS){
       setIsLoading(false);
       await Fluttertoast.showToast(msg: "${response.msg}");
+      Navigator.pop(ctx);
     }
       else{
         setIsLoading(false);
@@ -36,6 +37,7 @@ class SettingsProvider with ChangeNotifier{
     if (response.status == Apis.CODE_SUCCESS){
       setIsLoading(false);
       await Fluttertoast.showToast(msg: "${response.msg}");
+      Navigator.pop(ctx);
     }
     else{
       setIsLoading(false);

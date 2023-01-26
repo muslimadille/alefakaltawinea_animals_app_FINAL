@@ -745,11 +745,12 @@ class _AddCartScreenState extends State<AddCartScreen> {
       addCartModel.kind=_selectedTypes[i];
       addCartModel.family=_familyControllers[i].text;
       addCartModel.gender=_selectedGenders[i];
-      addCartModel.photo=_uploadedImages[i];
+      addCartModel.photo=_uploadedImages.isNotEmpty?_uploadedImages[i]:"";
       addCartModel.country=_cityControllers[i].text;
       cartsList.add(addCartModel);
     }
     cartsDatas.cards=cartsList;
+    cartsDatas.version="v2";
     cartProvider!.addCart(context, cartsDatas);
   }
 

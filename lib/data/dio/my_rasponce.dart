@@ -22,6 +22,8 @@ class MyResponse<T> extends Object {
   var _data;
   int?_activation_code;
 
+
+
   MyResponse.fromJson(Map<String, dynamic> json) {
     print("$TAG: ${json.toString()}");
     if (json.containsKey("activation_code")) {

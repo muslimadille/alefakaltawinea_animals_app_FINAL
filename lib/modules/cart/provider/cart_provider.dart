@@ -104,4 +104,34 @@ class CartProvider with ChangeNotifier{
     }
     notifyListeners();
   }
+  deleteCard(int card_id) async {
+    setIsLoading(true);
+    MyResponse<bool> response =
+    await cartApi.deleteCarts(card_id);
+    if (response.status == Apis.CODE_SUCCESS){
+      setIsLoading(false);
+      await getMyCart();
+      await Fluttertoast.showToast(msg: "${response.msg}");
+    }else{
+      await Fluttertoast.showToast(msg: "${response.msg}");
+      setIsLoading(false);
+    }
+    notifyListeners();
+  }
+  editCard(BuildContext context,AddCartModel data) async {
+    setIsLoading(true);
+    MyResponse<dynamic> response =
+    await cartApi.editeCart(model: data);
+    if (response.status == Apis.CODE_SHOW_MESSAGE){
+      setIsLoading(false);
+      await getMyCart();
+      await Fluttertoast.showToast(msg: "${response.msg}");
+      Navigator.pop(context);
+    }else{
+      await Fluttertoast.showToast(msg: "${response.msg}");
+      setIsLoading(false);
+    }
+    notifyListeners();
+  }
+
 }

@@ -85,7 +85,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> with  InputValidation
   Widget _sendBtn(){
     return Center(child: InkWell(
       onTap: (){
-        onSendClicked();
+        if(!settingsProvider!.isLoading){
+          onSendClicked();
+        }
       },
       child: Container(
         width: D.default_200,

@@ -32,6 +32,39 @@ class CartApi{
       return MyResponse<AddCartResponseModel>.init(Apis.CODE_ERROR, "", null);
     }
   }
+
+  Future<MyResponse<dynamic>> editeCart(
+      {
+        required AddCartModel model
+      }) async {
+    Map<String,dynamic>body={};
+    if(model.name!.isNotEmpty)body["name"]=model.name??"";
+    if(model.kind!.isNotEmpty)body["kind"]=model.kind??"";
+    if(model.family!.isNotEmpty)body["family"]=model.family??"";
+    if(model.gender!.isNotEmpty)body["gender"]=model.gender??"";
+    if(model.country!.isNotEmpty)body["country"]=model.country??"";
+    if(model.photo!.isNotEmpty)body["photo"]=model.photo??"";
+
+    final url = "${Apis.EDITE_CARD}";
+    final response = await BaseDioUtils.request(BaseDioUtils.REQUEST_POST, url,body: body);
+    if (response != null && response.statusCode == 200) {
+      return MyResponse<dynamic>.fromJson(
+          json.decode(jsonEncode(response.data)));
+    } else {
+      return MyResponse<dynamic>.init(Apis.CODE_ERROR, "", null);
+    }
+  }
+  Future<MyResponse<bool>> deleteCarts(int cardId) async {
+    final url = "${Apis.DELETE_CARD}/$cardId";
+    final response = await BaseDioUtils.request(BaseDioUtils.REQUEST_POST, url);
+    if (response != null && response.statusCode == 200) {
+      return MyResponse<bool>.fromJson(
+          json.decode(jsonEncode(response.data)));
+    } else {
+      return MyResponse<bool>.init(Apis.CODE_ERROR, "", null);
+    }
+  }
+
   Future<MyResponse<MyCartsModel>> getMyCarts() async {
     final url = "${Apis.USER_CART}";
     final response = await BaseDioUtils.request(BaseDioUtils.REQUEST_GET, url);

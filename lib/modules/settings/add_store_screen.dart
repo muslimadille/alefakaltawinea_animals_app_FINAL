@@ -83,7 +83,9 @@ class _AddStoreScreenState extends State<AddStoreScreen> with  InputValidationMi
   Widget _sendBtn(){
     return Center(child: InkWell(
       onTap: (){
-        onaddClicked();
+        if(!settingsProvider!.isLoading){
+          onaddClicked();
+        }
       },
       child: Container(
         width: D.default_200,

@@ -12,7 +12,7 @@ class Apis{
   static const REQ_FAILED = "failed";
   static const ExCEPTION = "Exception";
 
-  static String BASE_URL="https://alefak.com/api/v1";
+  static String BASE_URL="https://demo.alefak.com/api/v1";
   static String GET_CATEGORIES_LIST="${BASE_URL}/categories";
   static String GET_SERVICE_PROVIDERS_LIST="${BASE_URL}/shops";
   static String GET_ADS_SLIDER="${BASE_URL}/ads";
@@ -60,13 +60,8 @@ class Apis{
   static String USE_OFFER="${BASE_URL}/use-offer";
   static String SCAN_CODE="${BASE_URL}/scan-code";
   static String CHECK_COBON="${BASE_URL}/check-cobon";
-
-
-
-
-
-
-
+  static String EDITE_CARD="${BASE_URL}/edit-card";
+  static String DELETE_CARD="${BASE_URL}/delete-card";
 
 
 }

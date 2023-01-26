@@ -3,12 +3,17 @@ import 'package:alefakaltawinea_animals_app/utils/my_utils/baseDimentions.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseTextStyle.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/transition_image.dart';
 import 'package:flutter/Material.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../my_utils/constants.dart';
+import '../my_utils/myColors.dart';
 
 class AnimalCartWidget extends StatefulWidget {
   MyCart cart;
-  AnimalCartWidget({required this.cart,Key? key}) : super(key: key);
+  bool enableEdite;
+  Function? onDelete;
+  Function? onEdite;
+  AnimalCartWidget({required this.cart,this.enableEdite=false,this.onDelete,this.onEdite,Key? key}) : super(key: key);
 
   @override
   State<AnimalCartWidget> createState() => _AnimalCartWidgetState();
@@ -34,8 +39,8 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
               borderRadius: BorderRadius.circular(D.default_10),
             ),
             child: Stack(
-              alignment: AlignmentDirectional.center,
-              fit: StackFit.loose,
+              alignment: AlignmentDirectional.topCenter,
+              clipBehavior: Clip.none,
               children: [
                 Container(
                   width: D.size(180),
@@ -130,8 +135,54 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
                     ],
                   ),
                 ),
+                widget.enableEdite?Positioned(
+                  child: _deleteBtn(),top: 0,left: -D.default_7,):Container(),
+                widget.enableEdite?Positioned(
+                  child: _EditeBtn(),top: 0,right: -D.default_5,):Container()
               ],
             )));
+  }
+  Widget _deleteBtn(){
+    return Container(
+      height: D.default_40,
+      width: D.default_40,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(D.default_10),
+          color: Colors.white,
+          boxShadow:[BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              offset:Offset(1,1),
+              blurRadius:1,
+              spreadRadius: 1
+          )]
+      ),
+      child: InkWell(
+        onTap: (){
+          widget.onDelete==null?(){}:widget.onDelete!();
+        },
+      child: Icon(Icons.delete_forever,color: Colors.red,size: D.default_25,),
+    ),);
+  }
+  Widget _EditeBtn(){
+    return Container(
+      height: D.default_40,
+      width: D.default_40,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(D.default_10),
+          color: Colors.white,
+          boxShadow:[BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              offset:Offset(1,1),
+              blurRadius:1,
+              spreadRadius: 1
+          )]
+      ),
+      child: InkWell(
+        onTap: (){
+          widget.onEdite==null?(){}:widget.onEdite!();
+        },
+        child: Icon(Icons.edit,color: C.BASE_BLUE,size: D.default_25,),
+      ),);
   }
 
   Widget cartDataItem(String nameEn, String nameAr, String value) {

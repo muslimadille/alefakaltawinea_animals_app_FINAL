@@ -209,7 +209,8 @@
   "delete_animal_msg": "are you sure to delete this item",
   "dont_have_acout": "Don't have an account?",
   "have_acout": "have an account?",
-  "sould_out": "You have exceeded the number of times allowed to use this card in this offer."
+  "sould_out": "You have exceeded the number of times allowed to use this card in this offer.",
+  "delete_card_text": "Upon confirmation of deletion, you will not be able to use this card again, and the amount paid for it may not be refunded"
 
 
 }
