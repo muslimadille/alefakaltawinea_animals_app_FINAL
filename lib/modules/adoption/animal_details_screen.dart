@@ -11,6 +11,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/my_widgets/adoption_alert.dart';
 import 'data/animal_pager_list_model.dart';
 
 class AnimalDetailsScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class AnimalDetailsScreen extends StatefulWidget {
 
 class _AnimalDetailsScreenState extends State<AnimalDetailsScreen> {
   AdoptionProviderModel? adoptionProviderModel;
+  bool showPhone=false;
   void initState() {
     super.initState();
     adoptionProviderModel=Provider.of<AdoptionProviderModel>(context,listen: false);
@@ -117,7 +119,7 @@ class _AnimalDetailsScreenState extends State<AnimalDetailsScreen> {
       margin: EdgeInsets.only(top:D.default_80,bottom: D.default_20,left: D.default_20,right: D.default_20),
       padding: EdgeInsets.all(D.default_2),
 
-      child: Column(
+      child: SingleChildScrollView(child: Column(
         children: [
           _infoItem(tr("name"),data.name??".........."),
           Container(color: Colors.grey[400],height: D.default_1,width: double.infinity,),
@@ -139,9 +141,17 @@ class _AnimalDetailsScreenState extends State<AnimalDetailsScreen> {
           Container(color: Colors.grey[400],height: D.default_1,width: double.infinity,),
           _infoItem(tr("add_date"),data.createdAt!=null?data.createdAt!.split("T")[0]:"......."),
           Container(color: Colors.grey[400],height: D.default_1,width: double.infinity,),
-          _infoItem(tr("contact_phone"),data.phone??".........."),
+          InkWell(
+            onTap: (){
+              MyUtils.basePopup(context, body: AdoptionAlert(onOkPressed: (){
+                setState(() {
+                  showPhone=true;
+                });
+              }, content: tr("adoption_alert"),));
+            },
+            child: _infoItem(tr("contact_phone"),showPhone?(data.phone??".........."):tr("show_phone")),),
         ],
-      ),
+      ),),
     ),);
   }
   Widget _infoItem(String title,String content){
@@ -149,9 +159,11 @@ class _AnimalDetailsScreenState extends State<AnimalDetailsScreen> {
       padding: EdgeInsets.only(left: D.default_10,right: D.default_10,top:D.default_5,bottom: D.default_5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
           Text("${title}:  ",style: S.h2(color: Colors.black54),),
-          Text("${content}",style: S.h2(color: Colors.black54),),
+          Expanded(child: Text("${content}",style: S.h2(color: Colors.black54),)),
         ],),);
   }
 

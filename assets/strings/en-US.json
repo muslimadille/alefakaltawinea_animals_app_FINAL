@@ -115,11 +115,11 @@
   "for": "For",
   "offer_terms": "Offer Terms",
   "show_code_for": "Reveal the above code to your service provider to read and enjoy the show",
-  "my_carts": "My Carts",
+  "my_carts": "My Cards",
   "my_info": "Profile",
-  "dont_have_cart_title": "Your carts list is empty",
+  "dont_have_cart_title": "Your cards list is empty",
   "dont_have_cart_subtitle": "Looks like you haven't added any cards to your hand yet",
-  "add_cart": "Add cart",
+  "add_cart": "Add card",
   "more": "More...",
   "return": "recovery",
   "active_acount": "Account Activation",
@@ -148,7 +148,7 @@
   "name":"Name",
   "contact_phone": "Contact Number",
   "country": "Country",
-  "family": "Family",
+  "family": "Breed",
   "your_pet_name":"Your pet name",
   "pay": "Pay",
   "new_cart": "Create another card with 20% discount",
@@ -210,7 +210,12 @@
   "dont_have_acout": "Don't have an account?",
   "have_acout": "have an account?",
   "sould_out": "You have exceeded the number of times allowed to use this card in this offer.",
-  "delete_card_text": "Upon confirmation of deletion, you will not be able to use this card again, and the amount paid for it may not be refunded"
+  "delete_card_text": "Upon confirmation of deletion, you will not be able to use this card again, and the amount paid for it may not be refunded",
+  "adoption_alert": "The adoption platform is a free service, and we are not responsible for any material transactions and do not recommend them",
+  "show_phone": "Show the number",
+  "done": "Done"
+
+
 
 
 }

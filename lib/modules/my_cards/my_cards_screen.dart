@@ -1,4 +1,6 @@
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/animal_cart_widget.dart';
+import 'package:alefakaltawinea_animals_app/utils/my_widgets/delete_card_popup.dart';
+import 'package:alefakaltawinea_animals_app/utils/my_widgets/edite_card_popup.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/laoding_view.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/Material.dart';
@@ -64,7 +66,16 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           child: Container(
             child: ListView.builder(
               itemBuilder: (context, index) {
-                return AnimalCartWidget(cart:cartProvider!.myCarts[index]);
+                return AnimalCartWidget(cart: cartProvider!.myCarts[index],enableEdite: true,
+                  onDelete: (){
+                    MyUtils.basePopup(context, body: DeleteCradPopupScreen(content:tr("delete_card_text"),onOkPressed: (){
+                      cartProvider!.deleteCard(cartProvider!.myCarts[index].id??0);
+                      Navigator.pop(context);
+                    },));
+                  },
+                  onEdite: (){
+                    MyUtils.basePopup(context, body: EditeCartScreen(myCart:cartProvider!.myCarts[index],));
+                  },);
               },
               itemCount: cartProvider!.myCarts.length,
             ),

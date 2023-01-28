@@ -116,7 +116,7 @@ class _EditeCartScreenState extends State<EditeCartScreen> {
                 SizedBox(
                   width: D.default_10,
                 ),
-                Expanded(child: _bitDate()),
+                //Expanded(child: _bitDate()),
               ],
             ),
             Row(
@@ -593,6 +593,6 @@ class _EditeCartScreenState extends State<EditeCartScreen> {
     addCartModel.gender = _selectedGenders;
     addCartModel.photo = _uploadedImages;
     addCartModel.country = _cityControllers.text;
-    cartProvider!.editCard(context, addCartModel);
+    cartProvider!.editCard(context,widget.myCart.id??0, addCartModel);
   }
 }

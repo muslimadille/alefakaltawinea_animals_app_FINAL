@@ -35,17 +35,18 @@ class CartApi{
 
   Future<MyResponse<dynamic>> editeCart(
       {
+        required int id,
         required AddCartModel model
       }) async {
     Map<String,dynamic>body={};
-    if(model.name!.isNotEmpty)body["name"]=model.name??"";
-    if(model.kind!.isNotEmpty)body["kind"]=model.kind??"";
-    if(model.family!.isNotEmpty)body["family"]=model.family??"";
-    if(model.gender!.isNotEmpty)body["gender"]=model.gender??"";
-    if(model.country!.isNotEmpty)body["country"]=model.country??"";
-    if(model.photo!.isNotEmpty)body["photo"]=model.photo??"";
+    body["name"]=model.name??"";
+    body["kind"]=model.kind??"";
+    body["family"]=model.family??"";
+    body["gender"]=model.gender??"";
+    body["country"]=model.country??"";
+    body["photo"]=model.photo??"";
 
-    final url = "${Apis.EDITE_CARD}";
+    final url = "${Apis.EDITE_CARD}/$id";
     final response = await BaseDioUtils.request(BaseDioUtils.REQUEST_POST, url,body: body);
     if (response != null && response.statusCode == 200) {
       return MyResponse<dynamic>.fromJson(

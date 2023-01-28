@@ -77,7 +77,7 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
                                         margin: EdgeInsets.only(
                                             top: D.default_20, bottom: D.default_10),
                                         child: TransitionImage(
-                                          widget.cart.photo ?? "",
+                                          (widget.cart.photo ?? "").isNotEmpty?widget.cart.photo ?? "":"assets/images/adoption_img.png",
                                           width: D.default_80,
                                           fit: BoxFit.cover,
                                           strokeColor: Colors.black,

@@ -108,20 +108,20 @@ class CartProvider with ChangeNotifier{
     setIsLoading(true);
     MyResponse<bool> response =
     await cartApi.deleteCarts(card_id);
-    if (response.status == Apis.CODE_SUCCESS){
+    if (response.status == Apis.CODE_SHOW_MESSAGE){
       setIsLoading(false);
-      await getMyCart();
       await Fluttertoast.showToast(msg: "${response.msg}");
+      await getMyCart();
     }else{
       await Fluttertoast.showToast(msg: "${response.msg}");
       setIsLoading(false);
     }
     notifyListeners();
   }
-  editCard(BuildContext context,AddCartModel data) async {
+  editCard(BuildContext context,int id,AddCartModel data) async {
     setIsLoading(true);
     MyResponse<dynamic> response =
-    await cartApi.editeCart(model: data);
+    await cartApi.editeCart(id:id,model: data);
     if (response.status == Apis.CODE_SHOW_MESSAGE){
       setIsLoading(false);
       await getMyCart();
