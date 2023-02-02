@@ -1,57 +1,41 @@
 {
   "project_info": {
-    "project_number": "710525246132",
-    "project_id": "alifak-app",
-    "storage_bucket": "alifak-app.appspot.com"
+    "project_number": "1045812827198",
+    "project_id": "alefak-c0ebd",
+    "storage_bucket": "alefak-c0ebd.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:710525246132:android:9c03f5e819e3cffcd3d5e1",
+        "mobilesdk_app_id": "1:1045812827198:android:b04972d470f76ed907ad6f",
         "android_client_info": {
           "package_name": "com.alefakeltawinea.alefakaltawinea_animals_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "710525246132-k88tl44e7eoirclmn1flae96sblabn7q.apps.googleusercontent.com",
+          "client_id": "1045812827198-sref37vrf1egsif4tp9ef94lomt9fm0t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.alefakeltawinea.alefakaltawinea_animals_app",
-            "certificate_hash": "f254cc5d9389db86cbba158ea98cee30ce4c0e09"
+            "certificate_hash": "53902c8328088eccbea422c8632e6aaa00bc79b5"
           }
         },
         {
-          "client_id": "710525246132-mlj65k076ri7s3uvblpon3sfg2ij2qur.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.alefakeltawinea.alefakaltawinea_animals_app",
-            "certificate_hash": "0c1a521320229765b000766ed0dde37d7e0be6b3"
-          }
-        },
-        {
-          "client_id": "710525246132-nv0c9eotbgq0j3dhrb5afp90hh9r8inb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.alefakeltawinea.alefakaltawinea_animals_app",
-            "certificate_hash": "eba47f85563510e5fb199bdacd88d995e3dfbe15"
-          }
-        },
-        {
-          "client_id": "710525246132-e6nhr91gm3q1f0tkjgkrnmjf9l0b85kn.apps.googleusercontent.com",
+          "client_id": "1045812827198-vmbja4vvm2ac1jfphu36a9jb44iih265.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCUJWHon6CqOZ5D05xLGt2E75hD61rhDDc"
+          "current_key": "AIzaSyCh3Gyx1pB_vK-dUoNifkp2h2immbNtlYc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "710525246132-e6nhr91gm3q1f0tkjgkrnmjf9l0b85kn.apps.googleusercontent.com",
+              "client_id": "1045812827198-vmbja4vvm2ac1jfphu36a9jb44iih265.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

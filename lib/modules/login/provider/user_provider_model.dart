@@ -20,6 +20,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../intro/intro_screen.dart';
 import '../../serviceProviderAccount/SpHomeScreen.dart';
+import '../../spalshScreen/splash_two_screen.dart';
 
 class UserProviderModel with ChangeNotifier{
 
@@ -69,7 +70,10 @@ class UserProviderModel with ChangeNotifier{
 
       print("login error: ${response.msg}");
       setIsLoading(false);
-      if(!isSplash){await Fluttertoast.showToast(msg: "${response.msg}");}
+      if(!isSplash){
+        await Fluttertoast.showToast(msg: "${response.msg}");
+        MyUtils.navigateAsFirstScreen(ctx, OnBoardingScreen());
+      }
 
     }
     notifyListeners();

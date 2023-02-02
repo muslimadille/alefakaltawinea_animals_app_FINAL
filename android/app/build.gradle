@@ -33,7 +33,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33//flutter.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -51,7 +51,7 @@ android {
     defaultConfig {
         applicationId "com.alefakeltawinea.alefakaltawinea_animals_app"
         minSdkVersion 20//flutter.minSdkVersion
-        targetSdkVersion 31//flutter.targetSdkVersion
+        targetSdkVersion 33//flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -86,5 +86,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:multidex:2.0.1'
     implementation platform('com.google.firebase:firebase-bom:29.2.1')
+    implementation 'com.google.firebase:firebase-messaging:23.1.1'
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
 }

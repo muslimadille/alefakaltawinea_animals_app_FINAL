@@ -8,7 +8,10 @@ import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
+import 'package:alefakaltawinea_animals_app/utils/notification/fcm.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -31,9 +34,14 @@ import 'package:sizer/sizer.dart';
 
 
 typedef dynamic OnItemClickListener();
+FCM? fcm;
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await Firebase.initializeApp();
+  fcm=FCM();
+  await fcm!.init();
+
   //HttpOverrides.global =  MyHttpOverrides();//handel ssl shackoff error CERTIFICATE_VERIFY_FAILED
   runApp(MultiProvider(
     providers: [
@@ -81,13 +89,14 @@ class _MyAppState extends State<MyApp> {
     initPref();
     utilsProviderModel=Provider.of<UtilsProviderModel>(context,listen: false);
     Constants.utilsProviderModel=utilsProviderModel;
-
-
+    Constants.mainContext=context;
+    fcm!.requestPermission();
+    fcm!.getFCMToken();
+    fcm!.initInfo();
   }
   @override
   Widget build(BuildContext context) {
     utilsProviderModel=Provider.of<UtilsProviderModel>(context,listen: true);
-    Constants.mainContext=context;
     return  ResponsiveSizer(
         builder: (context, orientation, deviceType) {
           return MaterialApp(
