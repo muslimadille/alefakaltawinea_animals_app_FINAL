@@ -263,7 +263,7 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
             child: TransitionImage(
               getItemImage(index),
               width: double.infinity,
-              fit: index==0?BoxFit.fitHeight:BoxFit.fill,
+              fit: index==0?BoxFit.contain:BoxFit.contain,
             )),
         Container(
           height: D.default_1,

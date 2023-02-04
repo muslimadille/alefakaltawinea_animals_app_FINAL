@@ -136,9 +136,9 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
                   ),
                 ),
                 widget.enableEdite?Positioned(
-                  child: _deleteBtn(),top: 0,left: -D.default_7,):Container(),
+                  child: _deleteBtn(),top: 0,left: D.size(30),):Container(),
                 widget.enableEdite?Positioned(
-                  child: _EditeBtn(),top: 0,right: -D.default_5,):Container()
+                  child: _EditeBtn(),top: 0,right: D.size(30),):Container()
               ],
             )));
   }

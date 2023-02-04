@@ -120,7 +120,9 @@ class _ProfileScreenState extends State<ProfileScreen> with InputValidationMixin
     return Container(
       height: D.default_50,
       margin: EdgeInsets.only(left: D.default_25,right: D.default_25),
-      child: Row(children: [
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
         _myInfoBtn((){
         setState(() {
           selectedTap=0;

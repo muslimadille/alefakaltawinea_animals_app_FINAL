@@ -61,7 +61,7 @@ class _CategoryListItemState extends State<CategoryListItem> {
           child: TransitionImage(
         widget.image,
         width: double.infinity,
-        fit: BoxFit.fill,
+        fit: BoxFit.contain,
       )),
         Container(
           height: D.default_1,
