@@ -1,12 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:alefakaltawinea_animals_app/modules/login/login_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/spalshScreen/splash_two_screen.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FCM extends Object{
@@ -52,20 +50,21 @@ class FCM extends Object{
      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
        RemoteNotification? notification = message.notification;
        AndroidNotification? android = message.notification?.android;
+       Map<String,dynamic> messageMap=json.decode(message.data["data"]);
        if (notification != null) {
          if(android!=null){
            flutterLocalNotificationsPlugin.show(
                notification.hashCode,
-               notification.title,
-               notification.body,
+               Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
+               Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
                    android: AndroidNotificationDetails("alefak","alefak")
                ));
          }else{
            flutterLocalNotificationsPlugin.show(
                notification.hashCode,
-               notification.title,
-               notification.body,
+               Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
+               Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
                    iOS: DarwinNotificationDetails(subtitle:notification.body),
                ));
