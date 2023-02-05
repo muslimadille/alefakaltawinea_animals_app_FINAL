@@ -24,6 +24,16 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
   Widget build(BuildContext context) {
     return _cartItem();
   }
+  Widget _buttons(){
+    return Container(
+      padding: EdgeInsets.only(left: D.default_10,right: D.default_10),
+        width: D.size(180),
+        child:Row(children: [
+      widget.enableEdite?_deleteBtn():Container(),
+      Expanded(child: Container()),
+      widget.enableEdite?_EditeBtn():Container()
+    ],));
+  }
   Widget _cartItem() {
     return Directionality(
         textDirection: TextDirection.ltr,
@@ -135,10 +145,7 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
                     ],
                   ),
                 ),
-                widget.enableEdite?Positioned(
-                  child: _deleteBtn(),top: 0,left: D.size(30),):Container(),
-                widget.enableEdite?Positioned(
-                  child: _EditeBtn(),top: 0,right: D.size(30),):Container()
+                Positioned(child:_buttons() ,top: 0,)
               ],
             )));
   }
