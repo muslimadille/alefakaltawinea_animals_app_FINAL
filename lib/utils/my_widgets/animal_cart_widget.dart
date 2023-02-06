@@ -22,16 +22,20 @@ class AnimalCartWidget extends StatefulWidget {
 class _AnimalCartWidgetState extends State<AnimalCartWidget> {
   @override
   Widget build(BuildContext context) {
-    return _cartItem();
+    return Column(children:[
+      _buttons(),
+      _cartItem()
+    ]);
   }
   Widget _buttons(){
     return Container(
       padding: EdgeInsets.only(left: D.default_10,right: D.default_10),
         width: D.size(180),
         child:Row(children: [
-      widget.enableEdite?_deleteBtn():Container(),
-      Expanded(child: Container()),
-      widget.enableEdite?_EditeBtn():Container()
+      //widget.enableEdite?_deleteBtn():Container(),
+
+      widget.enableEdite?_EditeBtn():Container(),
+          Expanded(child: Container()),
     ],));
   }
   Widget _cartItem() {
@@ -145,7 +149,6 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
                     ],
                   ),
                 ),
-                Positioned(child:_buttons() ,top: 0,)
               ],
             )));
   }
@@ -175,8 +178,8 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
       height: D.default_40,
       width: D.default_40,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(D.default_10),
-          color: Colors.white,
+          borderRadius: BorderRadius.circular(D.default_100),
+          color: Colors.black,
           boxShadow:[BoxShadow(
               color: Colors.grey.withOpacity(0.5),
               offset:Offset(1,1),
@@ -188,7 +191,7 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
         onTap: (){
           widget.onEdite==null?(){}:widget.onEdite!();
         },
-        child: Icon(Icons.edit,color: C.BASE_BLUE,size: D.default_25,),
+        child: Icon(Icons.edit,color: Colors.white,size: D.default_25,),
       ),);
   }
 
@@ -199,18 +202,18 @@ class _AnimalCartWidgetState extends State<AnimalCartWidget> {
         children: [
           Text(
             nameEn,
-            style: S.h2(color: Colors.black),
+            style: S.h3(color: Colors.black),
             textAlign: TextAlign.start,
           ),
           Expanded(
               child: Text(
                 deleteSpaces(value),
-                style: S.h2(color: Colors.black),
+                style: S.h3(color: Colors.black),
                 textAlign: TextAlign.center,
               )),
           Text(
             nameAr,
-            style: S.h2(color: Colors.black),
+            style: S.h3(color: Colors.black),
             textAlign: TextAlign.end,
           )
         ],
