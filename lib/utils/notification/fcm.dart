@@ -1,18 +1,34 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:alefakaltawinea_animals_app/modules/cart/add_cart_screen.dart';
+import 'package:alefakaltawinea_animals_app/modules/categories_screen/mainCategoriesScreen.dart';
+import 'package:alefakaltawinea_animals_app/modules/login/login_screen.dart';
+import 'package:alefakaltawinea_animals_app/modules/registeration/registration_screen.dart';
+import 'package:alefakaltawinea_animals_app/modules/serviceProviders/details_screen/service_provider_details_screen.dart';
+import 'package:alefakaltawinea_animals_app/modules/serviceProviders/list_screen/data/getServiceProvidersApi.dart';
+import 'package:alefakaltawinea_animals_app/modules/serviceProviders/list_screen/data/serviceProvidersModel.dart';
 import 'package:alefakaltawinea_animals_app/modules/spalshScreen/splash_two_screen.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/Material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FCM extends Object{
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static String FCM_TOKEN="";
+  static RemoteMessage? lastMessage;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey(
+      debugLabel: "Main Navigator");
 
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    lastMessage=message;
     print('Handling a background message ${message.messageId}');
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
@@ -41,13 +57,16 @@ class FCM extends Object{
      await FirebaseMessaging.instance.getInitialMessage();
     /// open app
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      lastMessage=message;
+      Map<String,dynamic> messageMap=json.decode(message.data["data"]);
       print("onResume: $message");
-          (Map<String, dynamic> message) async => _serialiseAndNavigate(message);
+      (Map<String, dynamic> message) async => serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotificationAction));
     });
     ///background message
      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
      ///foreground message
      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+       lastMessage=message;
        RemoteNotification? notification = message.notification;
        AndroidNotification? android = message.notification?.android;
        Map<String,dynamic> messageMap=json.decode(message.data["data"]);
@@ -75,10 +94,16 @@ class FCM extends Object{
      });
 
    }
+    notificationSubscrib(bool isArabic)async{
+    if(isArabic){
+      await firebaseMessaging.subscribeToTopic('users-ar');
+    }else{
+      await firebaseMessaging.subscribeToTopic('users-en');
+    }
+
+   }
   initInfo(){
     Future.delayed(Duration(milliseconds: 100), () async {
-      await firebaseMessaging.subscribeToTopic('users');
-
       var initializationSettings;
       if(Platform.isAndroid){
         initializationSettings=InitializationSettings(android: AndroidInitializationSettings("mipmap/ic_launcher"));
@@ -87,7 +112,7 @@ class FCM extends Object{
       }else{
         initializationSettings=InitializationSettings();
       }
-      await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+      await flutterLocalNotificationsPlugin.initialize(initializationSettings,onDidReceiveNotificationResponse: serialiseAndNavigate);
       await flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>();
@@ -123,21 +148,45 @@ class FCM extends Object{
     }
 
   }
-  subscribeUserToken(String token){
-    if ((Constants.currentUser)!=null) {
-      //TODO SEND TOKEN TO SERVER
-    }
-  }
 
+  Future<void> serialiseAndNavigate(NotificationResponse? response) async{
+    Map<String,dynamic> message=json.decode(lastMessage!.data["data"]);
 
-
-  void _serialiseAndNavigate(Map<String, dynamic> message) {
-    if (Constants.currentUser!=null) {
-      MyUtils.navigateAsFirstScreen(Constants.mainContext!, OnBoardingScreen());
+    /// add card
+    if (message["notification_data"]["type"]==1) {
+      await Get.to(()=>MainCategoriesScreen(navigateTo:(){
+        if(Constants.currentUser!=null){
+           Get.to(()=>AddCartScreen());
+        }else{
+          Get.to(()=>RegistrationScreen(fromaddcard:true));
+        }
+      } ,));
       return;
     }
-    if (message['data']['item_type'] == 'order') {
-      MyUtils.navigateAsFirstScreen(Constants.mainContext!, OnBoardingScreen());
-    } // If there's no view it'll just open the app on the first view
+    /// service provider
+    if(message["notification_data"]["type"]==2){
+
+      GetServiceProvidersApi api=GetServiceProvidersApi();
+      await Get.to(()=>MainCategoriesScreen(navigateTo:(){
+          api.getServiceProvider(message["notification_data"]["ads_id"]??0).then((value){
+          Data provide=value.data;
+          Get.to(()=>ServiceProviderDetailsScreen(provide));
+        });
+      } ,));
+      return;
+    }
+    /// url
+    if (message["notification_data"]["type"] ==3) {
+      await Get.to(()=>MainCategoriesScreen(navigateTo:() async{
+        final String ure=message["notification_data"]["url"];
+        String  url = ure;
+        if (await canLaunch(url)) {
+        await launch(url);
+        } else {
+        await Fluttertoast.showToast(msg: tr("cant_opn_url"),backgroundColor: Colors.red,textColor: Colors.white,);
+        }
+      } ,));
+
+    }
   }
 }

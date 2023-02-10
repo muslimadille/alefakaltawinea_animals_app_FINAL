@@ -119,6 +119,9 @@ class MyResponse<T> extends Object {
       case CobonModel:
         _data = CobonModel.fromJson(json) as T;
         break;
+      case Data:
+        _data = Data.fromJson(json) as T;
+        break;
 
       default:_data = null;
     }

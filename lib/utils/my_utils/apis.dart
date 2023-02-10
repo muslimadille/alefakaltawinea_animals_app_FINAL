@@ -15,6 +15,7 @@ class Apis{
   static String BASE_URL="https://demo.alefak.com/api/v1";
   static String GET_CATEGORIES_LIST="${BASE_URL}/categories";
   static String GET_SERVICE_PROVIDERS_LIST="${BASE_URL}/shops";
+  static String GET_SERVICE_PROVIDER="${BASE_URL}/get-shop";
   static String GET_ADS_SLIDER="${BASE_URL}/ads";
   static String GET_REGIONS="${BASE_URL}/regions";
   static String LOGIN="${BASE_URL}/login";

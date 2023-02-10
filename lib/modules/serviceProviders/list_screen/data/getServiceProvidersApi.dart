@@ -37,6 +37,16 @@ class GetServiceProvidersApi{
       return MyResponse<List<Data>>.init(Apis.CODE_ERROR, "", null);
     }
   }
+  Future<MyResponse<Data>> getServiceProvider(int id) async {
+    String url = "${Apis.GET_SERVICE_PROVIDER}/$id}";
+    final response = await BaseDioUtils.request(BaseDioUtils.REQUEST_GET, url);
+    if (response != null && response.statusCode == 200) {
+      return MyResponse<Data>.fromJson(
+          json.decode(jsonEncode(response.data)));
+    } else {
+      return MyResponse<Data>.init(Apis.CODE_ERROR, "", null);
+    }
+  }
 
 
 }

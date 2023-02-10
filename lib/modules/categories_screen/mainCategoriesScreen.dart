@@ -20,7 +20,8 @@ import 'package:sprintf/sprintf.dart';
 
 
 class MainCategoriesScreen extends StatefulWidget {
-   MainCategoriesScreen();
+  Function? navigateTo;
+   MainCategoriesScreen({this.navigateTo});
 
   @override
   _MainCategoriesScreenState createState() => _MainCategoriesScreenState();
@@ -40,9 +41,10 @@ class _MainCategoriesScreenState extends State<MainCategoriesScreen> {
     categoriesProviderModel=Provider.of<CategoriesProviderModel>(context,listen: false);
     utilsProviderModel=Provider.of<UtilsProviderModel>(context,listen: false);
     WidgetsBinding.instance!.addPostFrameCallback((_){
-
       adsSliderProviderModel!.getAdsSlider();
       categoriesProviderModel!.getCategoriesList();
+      widget.navigateTo!=null?widget.navigateTo!():(){};
+
     });
 
   }
