@@ -15,6 +15,7 @@ import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/resources.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/transition_image.dart';
+import 'package:alefakaltawinea_animals_app/utils/notification/fcm.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -58,8 +59,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     userProviderModel=Provider.of<UserProviderModel>(context,listen: false);
     adsSliderProviderModel=Provider.of<AdsSliderProviderModel>(context,listen: false);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      _initPref(context);
-      //setLocal();
+      await _initPref(context);
+      FCM().notificationSubscrib(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar");
       adsSliderProviderModel!.getAdsSlider();
       await appStataProviderModel!.getAppActiveState(context);
       await appStataProviderModel!.getApplePayState();
@@ -122,7 +123,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     });
 
   }
-  void _initPref(BuildContext ctx)async{
+   _initPref(BuildContext ctx)async{
     if(Constants.prefs!.get(Constants.LANGUAGE_KEY!)!=null){
       if(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar"){
         utilsProviderModel!.setLanguageState("ar");

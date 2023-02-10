@@ -13,6 +13,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -89,17 +90,17 @@ class _MyAppState extends State<MyApp> {
     initPref();
     utilsProviderModel=Provider.of<UtilsProviderModel>(context,listen: false);
     Constants.utilsProviderModel=utilsProviderModel;
-    Constants.mainContext=context;
     fcm!.requestPermission();
     fcm!.getFCMToken();
     fcm!.initInfo();
   }
   @override
   Widget build(BuildContext context) {
+    Constants.mainContext=context;
     utilsProviderModel=Provider.of<UtilsProviderModel>(context,listen: true);
     return  ResponsiveSizer(
         builder: (context, orientation, deviceType) {
-          return MaterialApp(
+          return GetMaterialApp(
               theme: ThemeData(
                   primaryColor:C.BASE_BLUE,
                   focusColor:C.BASE_BLUE
