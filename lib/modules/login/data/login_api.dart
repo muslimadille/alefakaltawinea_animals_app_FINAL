@@ -23,4 +23,14 @@ class LoginApi{
       return MyResponse<UserData>.init(response!.statusCode.toString(),response.statusMessage!, null);
     }
   }
+  Future<MyResponse<dynamic>> logout() async {
+    final url = "${Apis.LOGOUT}";
+    final response = await BaseDioUtils.request(BaseDioUtils.REQUEST_POST, url);
+    if (response != null && response.statusCode == 200) {
+      return MyResponse<dynamic>.fromJson(
+          json.decode(jsonEncode(response.data)));
+    } else {
+      return MyResponse<dynamic>.init(response!.statusCode.toString(),response.statusMessage!, null);
+    }
+  }
 }

@@ -19,6 +19,7 @@ class Apis{
   static String GET_ADS_SLIDER="${BASE_URL}/ads";
   static String GET_REGIONS="${BASE_URL}/regions";
   static String LOGIN="${BASE_URL}/login";
+  static String LOGOUT="${BASE_URL}/logout";
   static String REGISTER="${BASE_URL}/register";
   static String ACTIVE_ACCOUNT="${BASE_URL}/activate";
   static String GET_AUTH_CODE_TO_SET_PASSWORD="${BASE_URL}/get-code";

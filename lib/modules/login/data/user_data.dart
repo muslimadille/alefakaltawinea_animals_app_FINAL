@@ -67,7 +67,7 @@ class UserData {
       });
     }
   }
-  int? id;
+  dynamic id;
   String? name;
   String? address;
   String? phone;

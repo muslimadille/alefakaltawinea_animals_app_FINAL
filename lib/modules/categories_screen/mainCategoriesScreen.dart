@@ -43,9 +43,14 @@ class _MainCategoriesScreenState extends State<MainCategoriesScreen> {
     WidgetsBinding.instance!.addPostFrameCallback((_){
       adsSliderProviderModel!.getAdsSlider();
       categoriesProviderModel!.getCategoriesList();
-      widget.navigateTo!=null?widget.navigateTo!():(){};
+      notificationNavigation();
+
 
     });
+
+  }
+   notificationNavigation(){
+      widget.navigateTo!=null?widget.navigateTo!():(){};
 
   }
   @override

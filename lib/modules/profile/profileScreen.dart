@@ -482,12 +482,7 @@ class _ProfileScreenState extends State<ProfileScreen> with InputValidationMixin
         Expanded(child: Text(Constants.currentUser!.name!,style: S.h1(color: Colors.black87),),),
 
         InkWell(onTap: ()async{
-         await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,"");
-         await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,"");
-         Apis.TOKEN_VALUE="";
-         Constants.currentUser=null;
-         userProviderModel!.currentUser=null;
-         MyUtils.navigateAsFirstScreen(context, SplashScreen());
+          await userProviderModel!.logout(context);
        },child: Container(
           padding: EdgeInsets.only(left:D.default_10,right:D.default_10,top:D.default_5,bottom:D.default_5),
           decoration: BoxDecoration(

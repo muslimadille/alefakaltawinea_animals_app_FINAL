@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:alefakaltawinea_animals_app/data/dio/my_rasponce.dart';
 import 'package:alefakaltawinea_animals_app/modules/categories_screen/mainCategoriesScreen.dart';
 import 'package:alefakaltawinea_animals_app/modules/login/data/login_api.dart';
@@ -15,8 +17,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sizer/sizer.dart';
-
 
 import '../../intro/intro_screen.dart';
 import '../../serviceProviderAccount/SpHomeScreen.dart';
@@ -36,48 +36,82 @@ class UserProviderModel with ChangeNotifier{
   UpdateProfileApi updateProfileApi=UpdateProfileApi();
   login(String phone,String password,BuildContext ctx,bool isSplash) async {
     setIsLoading(true);
-    MyResponse<UserData> response =
-    await loginApi.login(phone, password);
+    bool isLoged= await getSavedUser(ctx);
+    if(!isLoged){
+      MyResponse<UserData> response =
+      await loginApi.login(phone, password);
 
-    if (response.status == Apis.CODE_SUCCESS &&response.data!=null){
-      UserData user=response.data;
-       if(user.activate=="1"){
-         setCurrentUserData(user);
-         setIsLoading(false);
-         await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,phone);
-         await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,password);
-         if(user.userTypeId.toString()=="6"){
-           MyUtils.navigateAsFirstScreen(ctx, SpHomeScreen());
-         }else{
-           bool isShowed=await Constants.prefs!.getBool("intro${Constants.currentUser!.id}")??false;
-           if(!isShowed&&Constants.APPLE_PAY_STATE){
-             MyUtils.navigateAsFirstScreen(ctx, IntroScreen());
-           }else{
-             MyUtils.navigateAsFirstScreen(ctx, MainCategoriesScreen());
-           }
-         }
-       }else{
-         setIsLoading(false);
-         /// NAVIGATE TO SMS SCREEN
-         MyUtils.navigate(ctx, PhoneScreen(tr("login"), tr("register_otp")));
-       }
+      if (response.status == Apis.CODE_SUCCESS &&response.data!=null){
+        UserData user=response.data;
+        if(user.activate=="1"){
+          setCurrentUserData(user);
+          setIsLoading(false);
+          await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,phone);
+          await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,password);
+          await saveUserToPrefrances(user);
+          if(user.userTypeId.toString()=="6"){
+            MyUtils.navigateAsFirstScreen(ctx, SpHomeScreen());
+          }else{
+            bool isShowed=await Constants.prefs!.getBool("intro${Constants.currentUser!.id}")??false;
+            if(!isShowed&&Constants.APPLE_PAY_STATE){
+              MyUtils.navigateAsFirstScreen(ctx, IntroScreen());
+            }else{
+              MyUtils.navigateAsFirstScreen(ctx, MainCategoriesScreen());
+            }
+          }
+        }else{
+          setIsLoading(false);
+          /// NAVIGATE TO SMS SCREEN
+          MyUtils.navigate(ctx, PhoneScreen(tr("login"), tr("register_otp")));
+        }
 
-          }else if(response.status == Apis.CODE_ACTIVE_USER){
-      setIsLoading(false);
-      /// NAVIGATE TO SMS SCREEN
-      MyUtils.navigate(ctx, PhoneScreen(tr("login"), tr("register_otp")));
-    }else if(response.status == Apis.CODE_SHOW_MESSAGE ){
+      }else if(response.status == Apis.CODE_ACTIVE_USER){
+        setIsLoading(false);
+        /// NAVIGATE TO SMS SCREEN
+        MyUtils.navigate(ctx, PhoneScreen(tr("login"), tr("register_otp")));
+      }else if(response.status == Apis.CODE_SHOW_MESSAGE ){
 
-      print("login error: ${response.msg}");
-      setIsLoading(false);
-      if(!isSplash){
-        await Fluttertoast.showToast(msg: "${response.msg}");
-        MyUtils.navigateAsFirstScreen(ctx, OnBoardingScreen());
+        print("login error: ${response.msg}");
+        setIsLoading(false);
+        if(!isSplash){
+          await Fluttertoast.showToast(msg: "${response.msg}");
+          MyUtils.navigateAsFirstScreen(ctx, OnBoardingScreen());
+        }
+
+      }
+      notifyListeners();
+    }
+
+
+
+  }
+
+  Future<bool> getSavedUser(BuildContext ctx)async{
+    String user=await Constants.prefs!.getString(Constants.SAVED_USER_KEY!)??"";
+      if(user.isNotEmpty){
+        Constants.currentUser=UserData.fromJson(jsonDecode(_convertToJsonStringQuotes(raw:user)));
+        setCurrentUserData(Constants.currentUser!);
+        setIsLoading(false);
+        await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,Constants.currentUser!.phone??"");
+        await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,"password");
+        if(Constants.currentUser!.userTypeId.toString()=="6"){
+          MyUtils.navigateAsFirstScreen(ctx, SpHomeScreen());
+        }else{
+          bool isShowed=await Constants.prefs!.getBool("intro${Constants.currentUser!.id}")??false;
+          if(!isShowed&&Constants.APPLE_PAY_STATE){
+            MyUtils.navigateAsFirstScreen(ctx, IntroScreen());
+          }else{
+            MyUtils.navigateAsFirstScreen(ctx, MainCategoriesScreen());
+          }
+        }
+        notifyListeners();
+        return true;
       }
 
-    }
-    notifyListeners();
-
+    return false;
+  }
+  saveUserToPrefrances(UserData user)async{
+    await Constants.prefs!.setString(Constants.SAVED_USER_KEY!,user.toJson().toString());
   }
 setCurrentUserData(UserData user,){
   currentUser=user;
@@ -163,8 +197,7 @@ setCurrentUserData(UserData user,){
     await updateProfileApi.resetPassword(newPassword, confPassword,code,phone);
     if (response.status == Apis.CODE_SUCCESS){
       setIsLoading(false);
-      Constants.prefs!.clear();
-      Constants.currentUser=null;
+      logout(ctx);
       MyUtils.navigate(ctx, LoginScreen());
 
     }else if(response.status == Apis.CODE_SHOW_MESSAGE ){
@@ -193,6 +226,35 @@ setCurrentUserData(UserData user,){
     notifyListeners();
 
   }
-
+  logout(BuildContext ctx)async{
+    setIsLoading(true);
+    await loginApi.logout();
+    await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,"");
+    await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,"");
+    await Constants.prefs!.setString(Constants.SAVED_USER_KEY!,"");
+    Apis.TOKEN_VALUE="";
+    Constants.currentUser=null;
+    currentUser=null;
+    setIsLoading(false);
+    MyUtils.navigateAsFirstScreen(ctx, LoginScreen());
+  }
+  String _convertToJsonStringQuotes({required String raw}) {
+    /// remove space
+    String jsonString = raw.replaceAll(" ", "");
+    /// add quotes to json string
+    jsonString = jsonString.replaceAll('{', '{"');
+    jsonString = jsonString.replaceAll(':', '": "');
+    jsonString = jsonString.replaceAll(',', '", "');
+    jsonString = jsonString.replaceAll('}', '"}');
+    /// remove quotes on object json string
+    jsonString = jsonString.replaceAll('"{"', '{"');
+    jsonString = jsonString.replaceAll('"}"', '"}');
+    /// remove quotes on array json string
+    jsonString = jsonString.replaceAll('"[{', '[{');
+    jsonString = jsonString.replaceAll('}]"', '}]');
+    jsonString = jsonString.replaceAll('"[', '[');
+    jsonString = jsonString.replaceAll(']"', ']');
+    return jsonString;
+  }
 
 }
