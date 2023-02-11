@@ -13,6 +13,7 @@ class Constants extends Object{
   static  UserData? currentUser;
   static int OTP_LENGTH=4;
   static String? SAVED_PHONE_KEY="SAVED_PHONE";
+  static String? SAVED_USER_KEY="SAVED_USER";
   static String? SAVED_PASSWORD_KEY="SAVED_PASSWORD";
   static List<RegionsModel> REGIONS=[];
   static List<Get_states> STATES=[];

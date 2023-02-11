@@ -150,42 +150,43 @@ class FCM extends Object{
   }
 
   Future<void> serialiseAndNavigate(NotificationResponse? response) async{
+    var res= response;
     Map<String,dynamic> message=json.decode(lastMessage!.data["data"]);
 
     /// add card
     if (message["notification_data"]["type"]==1) {
-      await Get.to(()=>MainCategoriesScreen(navigateTo:(){
+       await Get.off(()=>MainCategoriesScreen(navigateTo:(){
         if(Constants.currentUser!=null){
            Get.to(()=>AddCartScreen());
         }else{
           Get.to(()=>RegistrationScreen(fromaddcard:true));
         }
-      } ,));
+      } ,),preventDuplicates: false);
       return;
     }
     /// service provider
     if(message["notification_data"]["type"]==2){
-
-      GetServiceProvidersApi api=GetServiceProvidersApi();
-      await Get.to(()=>MainCategoriesScreen(navigateTo:(){
-          api.getServiceProvider(message["notification_data"]["ads_id"]??0).then((value){
+      Get.back();
+       await Get.off(()=>MainCategoriesScreen(navigateTo:()async{
+        GetServiceProvidersApi api=GetServiceProvidersApi();
+        await api.getServiceProvider(message["notification_data"]["ads_id"]??0).then((value){
           Data provide=value.data;
           Get.to(()=>ServiceProviderDetailsScreen(provide));
         });
-      } ,));
+      } ,),preventDuplicates: false);
       return;
     }
     /// url
     if (message["notification_data"]["type"] ==3) {
-      await Get.to(()=>MainCategoriesScreen(navigateTo:() async{
-        final String ure=message["notification_data"]["url"];
+       await Get.off(()=>MainCategoriesScreen(navigateTo:() async{
+        final String ure=await message["notification_data"]["url"];
         String  url = ure;
         if (await canLaunch(url)) {
         await launch(url);
         } else {
         await Fluttertoast.showToast(msg: tr("cant_opn_url"),backgroundColor: Colors.red,textColor: Colors.white,);
         }
-      } ,));
+      } ,),preventDuplicates: false);
 
     }
   }
