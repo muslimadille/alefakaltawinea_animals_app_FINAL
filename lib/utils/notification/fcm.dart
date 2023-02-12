@@ -94,8 +94,10 @@ class FCM extends Object{
 
     notificationSubscrib(bool isArabic)async{
     if(isArabic){
+      await firebaseMessaging.unsubscribeFromTopic('users-en');
       await firebaseMessaging.subscribeToTopic('users-ar');
     }else{
+      await firebaseMessaging.unsubscribeFromTopic('users-ar');
       await firebaseMessaging.subscribeToTopic('users-en');
     }
 

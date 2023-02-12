@@ -1,18 +1,16 @@
 
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:alefakaltawinea_animals_app/modules/baseScreen/baseScreen.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myColors.dart';
-import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
-import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
-import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/notification/fcm.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -40,6 +38,7 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
+  final RemoteMessage? _message=await FirebaseMessaging.instance.getInitialMessage();
   fcm=FCM();
   await fcm!.init();
 
@@ -67,13 +66,14 @@ void main() async{
         supportedLocales: [Locale('en', 'US'), Locale('ar', 'EG')],
         path: 'assets/strings', // <-- change the path of the translation files
         fallbackLocale: Locale('ar', 'EG'),
-        child: MyApp()
+        child: MyApp(message:_message)
     ),
   ));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final RemoteMessage? message;
+  const MyApp({this.message,Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -93,6 +93,15 @@ class _MyAppState extends State<MyApp> {
     fcm!.requestPermission();
     fcm!.getFCMToken();
     fcm!.initInfo();
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      if (widget.message != null) {
+        Future.delayed(const Duration(milliseconds: 1000), () async {
+          Map<String,dynamic> messageMap=json.decode(widget.message!.data["data"]);
+          await fcm!.serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotificationAction,
+              payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
+        });
+      }
+    });
   }
   @override
   Widget build(BuildContext context) {
