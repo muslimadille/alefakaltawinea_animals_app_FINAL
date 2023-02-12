@@ -51,6 +51,11 @@ class FCM extends Object{
   }
    init()async{
      await FirebaseMessaging.instance.getInitialMessage();
+     NotificationAppLaunchDetails? notificationAppLaunchDetails =
+     await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+     if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+        await serialiseAndNavigate(notificationAppLaunchDetails!.notificationResponse!);
+     }
     /// open app work on background only
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       Map<String,dynamic> messageMap=json.decode(message.data["data"]);

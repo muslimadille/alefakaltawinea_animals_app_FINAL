@@ -38,7 +38,6 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
-  final RemoteMessage? _message=await FirebaseMessaging.instance.getInitialMessage();
   fcm=FCM();
   await fcm!.init();
 
@@ -66,14 +65,13 @@ void main() async{
         supportedLocales: [Locale('en', 'US'), Locale('ar', 'EG')],
         path: 'assets/strings', // <-- change the path of the translation files
         fallbackLocale: Locale('ar', 'EG'),
-        child: MyApp(message:_message)
+        child: MyApp()
     ),
   ));
 }
 
 class MyApp extends StatefulWidget {
-  final RemoteMessage? message;
-  const MyApp({this.message,Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -93,15 +91,6 @@ class _MyAppState extends State<MyApp> {
     fcm!.requestPermission();
     fcm!.getFCMToken();
     fcm!.initInfo();
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      if (widget.message != null) {
-        Future.delayed(const Duration(milliseconds: 1000), () async {
-          Map<String,dynamic> messageMap=json.decode(widget.message!.data["data"]);
-          await fcm!.serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotificationAction,
-              payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
-        });
-      }
-    });
   }
   @override
   Widget build(BuildContext context) {
