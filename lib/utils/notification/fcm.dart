@@ -3,14 +3,11 @@ import 'dart:io';
 
 import 'package:alefakaltawinea_animals_app/modules/cart/add_cart_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/categories_screen/mainCategoriesScreen.dart';
-import 'package:alefakaltawinea_animals_app/modules/login/login_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/registeration/registration_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/serviceProviders/details_screen/service_provider_details_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/serviceProviders/list_screen/data/getServiceProvidersApi.dart';
 import 'package:alefakaltawinea_animals_app/modules/serviceProviders/list_screen/data/serviceProvidersModel.dart';
-import 'package:alefakaltawinea_animals_app/modules/spalshScreen/splash_two_screen.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
-import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/Material.dart';
@@ -30,25 +27,27 @@ class FCM extends Object{
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     lastMessage=message;
     print('Handling a background message ${message.messageId}');
+    lastMessage=message;
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
+    Map<String,dynamic> messageMap=json.decode(message.data["data"]);
     if (notification != null) {
       if(android!=null){
         await flutterLocalNotificationsPlugin.show(
             notification.hashCode,
-            notification.title,
-            notification.body,
+            Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
+            Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
                 android: AndroidNotificationDetails("alefak","alefak")
-            ));
+            ),payload: messageMap["notification_data"]["type"].toString());
       }else{
         await flutterLocalNotificationsPlugin.show(
             notification.hashCode,
-            notification.title,
-            notification.body,
+            Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
+            Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
               iOS: DarwinNotificationDetails(subtitle:notification.body),
-            ));
+            ),payload: messageMap["notification_data"]["type"].toString());
       }
 
     }
@@ -77,8 +76,10 @@ class FCM extends Object{
                Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
                Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
-                   android: AndroidNotificationDetails("alefak","alefak")
-               ));
+                   android: AndroidNotificationDetails(
+                       "alefak","alefak",
+                   ),
+               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}");
          }else{
            flutterLocalNotificationsPlugin.show(
                notification.hashCode,
@@ -86,7 +87,7 @@ class FCM extends Object{
                Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
                    iOS: DarwinNotificationDetails(subtitle:notification.body),
-               ));
+               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}");
          }
 
        }
@@ -94,6 +95,7 @@ class FCM extends Object{
      });
 
    }
+
     notificationSubscrib(bool isArabic)async{
     if(isArabic){
       await firebaseMessaging.subscribeToTopic('users-ar');
@@ -108,7 +110,13 @@ class FCM extends Object{
       if(Platform.isAndroid){
         initializationSettings=InitializationSettings(android: AndroidInitializationSettings("mipmap/ic_launcher"));
       }else if(Platform.isIOS){
-        initializationSettings=InitializationSettings(iOS:DarwinInitializationSettings() );
+        initializationSettings=InitializationSettings(iOS:DarwinInitializationSettings(
+            requestAlertPermission: false,
+            requestBadgePermission: false,
+            requestSoundPermission: false,
+            onDidReceiveLocalNotification:
+                (int? id, String? title, String? body, String? payload) async {}
+        ) );
       }else{
         initializationSettings=InitializationSettings();
       }
@@ -150,11 +158,12 @@ class FCM extends Object{
   }
 
   Future<void> serialiseAndNavigate(NotificationResponse? response) async{
-    var res= response;
+    String type= (response!.payload??"").split("#")[0]??"";
+    String providerId=(response.payload??"").split("#")[1]??"";
     Map<String,dynamic> message=json.decode(lastMessage!.data["data"]);
 
     /// add card
-    if (message["notification_data"]["type"]==1) {
+    if (type=="1") {
        await Get.off(()=>MainCategoriesScreen(navigateTo:(){
         if(Constants.currentUser!=null){
            Get.to(()=>AddCartScreen());
@@ -165,11 +174,11 @@ class FCM extends Object{
       return;
     }
     /// service provider
-    if(message["notification_data"]["type"]==2){
+    if(type=="2"){
       Get.back();
        await Get.off(()=>MainCategoriesScreen(navigateTo:()async{
         GetServiceProvidersApi api=GetServiceProvidersApi();
-        await api.getServiceProvider(message["notification_data"]["ads_id"]??0).then((value){
+        await api.getServiceProvider(int.parse(providerId.isNotEmpty?providerId:"0")).then((value){
           Data provide=value.data;
           Get.to(()=>ServiceProviderDetailsScreen(provide));
         });
@@ -177,7 +186,7 @@ class FCM extends Object{
       return;
     }
     /// url
-    if (message["notification_data"]["type"] ==3) {
+    if (type=="3") {
        await Get.off(()=>MainCategoriesScreen(navigateTo:() async{
         final String ure=await message["notification_data"]["url"];
         String  url = ure;
