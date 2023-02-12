@@ -20,14 +20,11 @@ class FCM extends Object{
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static String FCM_TOKEN="";
-  static RemoteMessage? lastMessage;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey(
       debugLabel: "Main Navigator");
 
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    lastMessage=message;
     print('Handling a background message ${message.messageId}');
-    lastMessage=message;
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
     Map<String,dynamic> messageMap=json.decode(message.data["data"]);
@@ -39,7 +36,7 @@ class FCM extends Object{
             Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
                 android: AndroidNotificationDetails("alefak","alefak")
-            ),payload: messageMap["notification_data"]["type"].toString());
+            ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
       }else{
         await flutterLocalNotificationsPlugin.show(
             notification.hashCode,
@@ -47,25 +44,24 @@ class FCM extends Object{
             Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
               iOS: DarwinNotificationDetails(subtitle:notification.body),
-            ),payload: messageMap["notification_data"]["type"].toString());
+            ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
       }
 
     }
   }
    init()async{
      await FirebaseMessaging.instance.getInitialMessage();
-    /// open app
+    /// open app work on background only
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      lastMessage=message;
       Map<String,dynamic> messageMap=json.decode(message.data["data"]);
       print("onResume: $message");
-      (Map<String, dynamic> message) async => serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotificationAction));
+      serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotificationAction,
+          payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
     });
     ///background message
      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
      ///foreground message
      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-       lastMessage=message;
        RemoteNotification? notification = message.notification;
        AndroidNotification? android = message.notification?.android;
        Map<String,dynamic> messageMap=json.decode(message.data["data"]);
@@ -79,7 +75,7 @@ class FCM extends Object{
                    android: AndroidNotificationDetails(
                        "alefak","alefak",
                    ),
-               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}");
+               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
          }else{
            flutterLocalNotificationsPlugin.show(
                notification.hashCode,
@@ -87,7 +83,7 @@ class FCM extends Object{
                Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
                    iOS: DarwinNotificationDetails(subtitle:notification.body),
-               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}");
+               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
          }
 
        }
@@ -160,7 +156,7 @@ class FCM extends Object{
   Future<void> serialiseAndNavigate(NotificationResponse? response) async{
     String type= (response!.payload??"").split("#")[0]??"";
     String providerId=(response.payload??"").split("#")[1]??"";
-    Map<String,dynamic> message=json.decode(lastMessage!.data["data"]);
+    String link=(response.payload??"").split("#")[2]??"";
 
     /// add card
     if (type=="1") {
@@ -188,7 +184,7 @@ class FCM extends Object{
     /// url
     if (type=="3") {
        await Get.off(()=>MainCategoriesScreen(navigateTo:() async{
-        final String ure=await message["notification_data"]["url"];
+        final String ure=link;
         String  url = ure;
         if (await canLaunch(url)) {
         await launch(url);
