@@ -39,7 +39,7 @@ class FCM extends Object{
             Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
                 android: AndroidNotificationDetails("alefak","alefak")
-            ),payload: messageMap["notification_data"]["type"].toString());
+            ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
       }else{
         await flutterLocalNotificationsPlugin.show(
             notification.hashCode,
@@ -47,7 +47,7 @@ class FCM extends Object{
             Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
               iOS: DarwinNotificationDetails(subtitle:notification.body),
-            ),payload: messageMap["notification_data"]["type"].toString());
+            ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
       }
 
     }
@@ -79,7 +79,7 @@ class FCM extends Object{
                    android: AndroidNotificationDetails(
                        "alefak","alefak",
                    ),
-               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}");
+               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
          }else{
            flutterLocalNotificationsPlugin.show(
                notification.hashCode,
@@ -87,7 +87,7 @@ class FCM extends Object{
                Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
                    iOS: DarwinNotificationDetails(subtitle:notification.body),
-               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}");
+               ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
          }
 
        }
@@ -160,6 +160,7 @@ class FCM extends Object{
   Future<void> serialiseAndNavigate(NotificationResponse? response) async{
     String type= (response!.payload??"").split("#")[0]??"";
     String providerId=(response.payload??"").split("#")[1]??"";
+    String url=(response.payload??"").split("#")[2]??"";
     Map<String,dynamic> message=json.decode(lastMessage!.data["data"]);
 
     /// add card
