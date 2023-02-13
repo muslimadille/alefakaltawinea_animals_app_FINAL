@@ -6,6 +6,7 @@ import 'package:alefakaltawinea_animals_app/utils/my_utils/baseDimentions.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseTextStyle.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/laoding_view.dart';
+import 'package:alefakaltawinea_animals_app/utils/notification/fcm.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,8 +45,6 @@ class _MainCategoriesScreenState extends State<MainCategoriesScreen> {
       adsSliderProviderModel!.getAdsSlider();
       categoriesProviderModel!.getCategoriesList();
       notificationNavigation();
-
-
     });
 
   }

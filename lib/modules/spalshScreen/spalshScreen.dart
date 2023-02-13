@@ -20,6 +20,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_intro/flutter_intro.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -55,16 +57,17 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     super.initState();
     getRegions();
     getAppInfo();
+    FCM().notificationSubscrib(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar");
     appStataProviderModel=Provider.of<AppStataProviderModel>(context,listen:false);
     userProviderModel=Provider.of<UserProviderModel>(context,listen: false);
     adsSliderProviderModel=Provider.of<AdsSliderProviderModel>(context,listen: false);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       await _initPref(context);
-      FCM().notificationSubscrib(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar");
       adsSliderProviderModel!.getAdsSlider();
       await appStataProviderModel!.getAppActiveState(context);
       await appStataProviderModel!.getApplePayState();
       login();
+
     });
 
 
@@ -162,14 +165,16 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       userProviderModel!.login(phone, password,context,false);
     }else{
       await Future.delayed(Duration(milliseconds: 1000)).then((value) {
+
         if(appStataProviderModel!.app_active_state){
           MyUtils.navigateAsFirstScreen(context, MaintainanceScreen());
         }else{
           if(widget.toHome??false){
+            FCM().openClosedAppFromNotification();
             MyUtils.navigateReplaceCurrent(context, MainCategoriesScreen());
           }else{
+            FCM().openClosedAppFromNotification();
             MyUtils.navigateReplaceCurrent(context, ChoceLanguageScreen());
-
           }
         }
       });

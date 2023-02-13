@@ -17,6 +17,14 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FCM extends Object{
+  @pragma('vm:entry-point')
+  static void myBackgroundMessageHandler(NotificationResponse response) {
+    if (true) {
+       Fluttertoast.showToast(msg:tr("xxxxxx${response.payload}") );
+    }
+
+    // Or do other work.
+  }
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static String FCM_TOKEN="";
@@ -35,7 +43,7 @@ class FCM extends Object{
             Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
             Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
-                android: AndroidNotificationDetails("alefak","alefak")
+                android: AndroidNotificationDetails("com.google.firebase.messaging.default_notification_channel_id","")
             ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
       }else{
         await flutterLocalNotificationsPlugin.show(
@@ -48,18 +56,20 @@ class FCM extends Object{
       }
 
     }
+  } openClosedAppFromNotification()async{
+    final NotificationAppLaunchDetails? notificationAppLaunchDetails =
+        await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
+    if(notificationAppLaunchDetails!.didNotificationLaunchApp){
+      await serialiseAndNavigate(notificationAppLaunchDetails.notificationResponse);
+    }
   }
    init()async{
-     await FirebaseMessaging.instance.getInitialMessage();
-     NotificationAppLaunchDetails? notificationAppLaunchDetails =
-     await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-     if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
-        await serialiseAndNavigate(notificationAppLaunchDetails!.notificationResponse!);
-     }
-    /// open app work on background only
+     await firebaseMessaging.app.setAutomaticDataCollectionEnabled(true);
+     /// open app work on background only
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       Map<String,dynamic> messageMap=json.decode(message.data["data"]);
-      print("onResume: $message");
+       Fluttertoast.showToast(msg: tr("onMessageOpenedApp"),backgroundColor: Colors.red,textColor: Colors.white,);
+
       serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotificationAction,
           payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
     });
@@ -68,6 +78,7 @@ class FCM extends Object{
      ///foreground message
      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
        RemoteNotification? notification = message.notification;
+
        AndroidNotification? android = message.notification?.android;
        Map<String,dynamic> messageMap=json.decode(message.data["data"]);
        if (notification != null) {
@@ -79,6 +90,9 @@ class FCM extends Object{
                NotificationDetails(
                    android: AndroidNotificationDetails(
                        "alefak","alefak",
+                       importance: Importance.max,
+                       priority: Priority.high,
+                       styleInformation: BigTextStyleInformation('')
                    ),
                ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
          }else{
@@ -107,7 +121,7 @@ class FCM extends Object{
     }
 
    }
-  initInfo(){
+  initInfo() async {
     Future.delayed(Duration(milliseconds: 100), () async {
       var initializationSettings;
       if(Platform.isAndroid){
@@ -123,10 +137,19 @@ class FCM extends Object{
       }else{
         initializationSettings=InitializationSettings();
       }
-      await flutterLocalNotificationsPlugin.initialize(initializationSettings,onDidReceiveNotificationResponse: serialiseAndNavigate);
-      await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+
+      await flutterLocalNotificationsPlugin.initialize(initializationSettings,onDidReceiveNotificationResponse: serialiseAndNavigate,onDidReceiveBackgroundNotificationResponse: myBackgroundMessageHandler );
+
+      if(Platform.isAndroid){
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+      }
+      if(Platform.isIOS){
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>();
+      }
 
       await firebaseMessaging.setForegroundNotificationPresentationOptions(
         alert: true,
@@ -134,6 +157,7 @@ class FCM extends Object{
         sound: true,
       );
     });
+
   }
 
 
@@ -159,7 +183,6 @@ class FCM extends Object{
     }
 
   }
-
   Future<void> serialiseAndNavigate(NotificationResponse? response) async{
     String type= (response!.payload??"").split("#")[0]??"";
     String providerId=(response.payload??"").split("#")[1]??"";

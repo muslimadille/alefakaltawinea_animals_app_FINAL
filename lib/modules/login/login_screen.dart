@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> with  InputValidationMixin{
 
     return BaseScreen( showSettings: false, showBottomBar: false, tag: "LoginScreen",
       body: userProviderModel!.isLoading?LoadingProgress():
-      SingleChildScrollView(child: Column(children: [
+      Column(children: [
         ActionBarWidget(
             "", context,
             enableShadow:false,
@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> with  InputValidationMixin{
             backgroundColor:Colors.white
 
         ),
-        SingleChildScrollView(child: Column(
+        Expanded(child: SingleChildScrollView(child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
@@ -74,8 +74,8 @@ class _LoginScreenState extends State<LoginScreen> with  InputValidationMixin{
                     dont_have_account()
 
                   ],),),)
-          ],),)
-      ],)),);
+          ],),))
+      ],),);
   }
   Widget dont_have_account(){
     return Container(child:Row(
