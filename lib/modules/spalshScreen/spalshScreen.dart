@@ -164,16 +164,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     if(phone.isNotEmpty&&password.isNotEmpty){
       userProviderModel!.login(phone, password,context,false);
     }else{
-      await Future.delayed(Duration(milliseconds: 1000)).then((value) {
-
+      await Future.delayed(Duration(milliseconds: 1000)).then((value) async {
         if(appStataProviderModel!.app_active_state){
           MyUtils.navigateAsFirstScreen(context, MaintainanceScreen());
         }else{
           if(widget.toHome??false){
-            FCM().openClosedAppFromNotification();
+            await FCM().openClosedAppFromNotification();
             MyUtils.navigateReplaceCurrent(context, MainCategoriesScreen());
           }else{
-            FCM().openClosedAppFromNotification();
+            await FCM().openClosedAppFromNotification();
             MyUtils.navigateReplaceCurrent(context, ChoceLanguageScreen());
           }
         }
