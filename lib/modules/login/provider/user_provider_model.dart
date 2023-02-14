@@ -13,6 +13,7 @@ import 'package:alefakaltawinea_animals_app/modules/spalshScreen/spalshScreen.da
 import 'package:alefakaltawinea_animals_app/utils/my_utils/apis.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
+import 'package:alefakaltawinea_animals_app/utils/notification/fcm.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class UserProviderModel with ChangeNotifier{
   login(String phone,String password,BuildContext ctx,bool isSplash) async {
     setIsLoading(true);
     bool isLoged= await getSavedUser(ctx);
+
     if(!isLoged){
       MyResponse<UserData> response =
       await loginApi.login(phone, password);
@@ -54,8 +56,10 @@ class UserProviderModel with ChangeNotifier{
           }else{
             bool isShowed=await Constants.prefs!.getBool("intro${Constants.currentUser!.id}")??false;
             if(!isShowed&&Constants.APPLE_PAY_STATE){
+              await FCM().openClosedAppFromNotification();
               MyUtils.navigateAsFirstScreen(ctx, IntroScreen());
             }else{
+              await FCM().openClosedAppFromNotification();
               MyUtils.navigateAsFirstScreen(ctx, MainCategoriesScreen());
             }
           }
@@ -89,7 +93,7 @@ class UserProviderModel with ChangeNotifier{
   Future<bool> getSavedUser(BuildContext ctx)async{
     String user=await Constants.prefs!.getString(Constants.SAVED_USER_KEY!)??"";
       if(user.isNotEmpty){
-        Constants.currentUser=UserData.fromJson(jsonDecode(_convertToJsonStringQuotes(raw:user)));
+         Constants.currentUser=UserData.fromJson(jsonDecode(_convertToJsonStringQuotes(raw:user)));
         setCurrentUserData(Constants.currentUser!);
         setIsLoading(false);
         await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,Constants.currentUser!.phone??"");
@@ -99,8 +103,10 @@ class UserProviderModel with ChangeNotifier{
         }else{
           bool isShowed=await Constants.prefs!.getBool("intro${Constants.currentUser!.id}")??false;
           if(!isShowed&&Constants.APPLE_PAY_STATE){
+            await FCM().openClosedAppFromNotification();
             MyUtils.navigateAsFirstScreen(ctx, IntroScreen());
           }else{
+            await FCM().openClosedAppFromNotification();
             MyUtils.navigateAsFirstScreen(ctx, MainCategoriesScreen());
           }
         }

@@ -57,9 +57,12 @@ class FCM extends Object{
 
     }
   } openClosedAppFromNotification()async{
+
     final NotificationAppLaunchDetails? notificationAppLaunchDetails =
         await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
     if(notificationAppLaunchDetails!.didNotificationLaunchApp){
+      await Fluttertoast.showToast(msg: tr("payload:${notificationAppLaunchDetails.notificationResponse!.payload}"),backgroundColor: Colors.red,textColor: Colors.white,);
+
       await serialiseAndNavigate(notificationAppLaunchDetails.notificationResponse);
     }
   }
@@ -68,8 +71,6 @@ class FCM extends Object{
      /// open app work on background only
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       Map<String,dynamic> messageMap=json.decode(message.data["data"]);
-       Fluttertoast.showToast(msg: tr("onMessageOpenedApp"),backgroundColor: Colors.red,textColor: Colors.white,);
-
       serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotificationAction,
           payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
     });
