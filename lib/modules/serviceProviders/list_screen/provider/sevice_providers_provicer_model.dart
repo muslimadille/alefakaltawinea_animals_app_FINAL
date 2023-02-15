@@ -28,6 +28,7 @@ class ServiceProvidersProviderModel with ChangeNotifier {
   List<Data> currentLocationsList=[];
   Data? currentSelectedShop;
   int?selectedMarkerColor;
+  bool fetchEnd=true;
 
   /// ..........categories...........
   ServiceProviderModel? serviceProviderModel;
@@ -37,7 +38,6 @@ class ServiceProvidersProviderModel with ChangeNotifier {
     setIsLoading(true);
     if(page==1) {
       serviceProviderModel = null;
-      setIsLoading(true);
     }
     MyResponse<ServiceProviderModel> response =
     await getServiceProvidersApi.getServiceProviders(categoryId, page,keyword: keyword);

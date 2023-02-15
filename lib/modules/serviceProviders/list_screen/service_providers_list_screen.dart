@@ -72,7 +72,7 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen>  
           serviceProvidersProviderModel!.isLoading&&((serviceProvidersProviderModel!.serviceProviderModel)!=null?serviceProvidersProviderModel!.serviceProviderModel!.data!.isEmpty:true)?LoadingProgress():_listitem(),
           serviceProvidersProviderModel!.serviceProviderModel!=null?serviceProvidersProviderModel!.isLoading&&serviceProvidersProviderModel!.serviceProviderModel!.data!.isNotEmpty?
           Container():Container():Container(),
-          serviceProvidersProviderModel!.isLoading?Container(color:C.ADAPTION_COLOR,height: MediaQuery.of(context).size.height,width: MediaQuery.of(context).size.width,):Container()
+          serviceProvidersProviderModel!.isLoading?Container(height: MediaQuery.of(context).size.height,width: MediaQuery.of(context).size.width,):Container()
         ],)),
             serviceProvidersProviderModel!.serviceProviderModel!=null?serviceProvidersProviderModel!.isLoading&&serviceProvidersProviderModel!.serviceProviderModel!.data!.isNotEmpty?
             Container(height: D.default_60,width: D.default_250,child: Center(child: SpinKitCircle(
@@ -99,7 +99,7 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen>  
   }
   void _scrollListener() {
     print(controller!.position.extentAfter);
-    if (controller!.position.extentAfter < serviceProvidersProviderModel!.serviceProviderModel!.data!.length-1) {
+    if ((!serviceProvidersProviderModel!.isLoading)&&(controller!.position.extentAfter < serviceProvidersProviderModel!.serviceProviderModel!.data!.length-1)) {
       _currentLoadedPage=_currentLoadedPage+1;
        serviceProvidersProviderModel!.getServiceProvidersList(widget.selectedCategory!.id!, _currentLoadedPage);
     }
