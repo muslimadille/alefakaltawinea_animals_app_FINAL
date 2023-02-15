@@ -15,6 +15,7 @@ import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/resources.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/transition_image.dart';
+import 'package:alefakaltawinea_animals_app/utils/my_widgets/update_app_popup.dart';
 import 'package:alefakaltawinea_animals_app/utils/notification/fcm.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -66,7 +67,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       adsSliderProviderModel!.getAdsSlider();
       await appStataProviderModel!.getAppActiveState(context);
       await appStataProviderModel!.getApplePayState();
-      login();
+      if(Constants.IS_FORCE_UPDATE){
+        MyUtils.basePopup(context, body: UpdateAppPopup(content: tr("update"),onOkPressed: (){},));
+      }else{
+        login();
+      }
 
     });
 

@@ -16,13 +16,13 @@ class AppStatesApi{
       return false;
     }
   }
-  Future<bool> getApplePayState() async {
-    final url = "https://osta-82ef0-default-rtdb.europe-west1.firebasedatabase.app/alefak_apple_pay.json";
+  Future<Map<String,dynamic>> getApplePayState() async {
+    final url = "https://osta-82ef0-default-rtdb.europe-west1.firebasedatabase.app/alefak_config.json";
     final response = await BaseDioUtils.request(BaseDioUtils.REQUEST_GET, url);
     if (response != null && response.statusCode == 200) {
       return json.decode(jsonEncode(response.data));
     } else {
-      return false;
+      return {};
     }
   }
 }
