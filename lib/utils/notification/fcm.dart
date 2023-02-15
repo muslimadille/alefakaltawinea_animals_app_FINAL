@@ -109,14 +109,14 @@ class FCM extends Object{
                    ),
                ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
          }else{
-           flutterLocalNotificationsPlugin.show(
+          /* flutterLocalNotificationsPlugin.show(
                notification.hashCode,
                Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
                Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
                    iOS: DarwinNotificationDetails(subtitle:notification.body),
                ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
-         }
+        */ }
 
        }
 
