@@ -20,7 +20,6 @@ class FCM extends Object{
   @pragma('vm:entry-point')
   static void myBackgroundMessageHandler(NotificationResponse response) {
     if (true) {
-       Fluttertoast.showToast(msg:tr("xxxxxx${response.payload}") );
     }
 
     // Or do other work.
@@ -63,7 +62,6 @@ class FCM extends Object{
     await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
-      await Fluttertoast.showToast(msg: tr("initialMessage:${initialMessage}"),backgroundColor: Colors.red,textColor: Colors.white,);
       Map<String,dynamic> messageMap=json.decode(initialMessage.data["data"]);
       await serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotification,
           payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
@@ -71,8 +69,6 @@ class FCM extends Object{
     final NotificationAppLaunchDetails? notificationAppLaunchDetails =
         await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
     if(notificationAppLaunchDetails!.didNotificationLaunchApp){
-      await Fluttertoast.showToast(msg: tr("payload:${notificationAppLaunchDetails.notificationResponse!.payload}"),backgroundColor: Colors.red,textColor: Colors.white,);
-
       await serialiseAndNavigate(notificationAppLaunchDetails.notificationResponse);
     }
 
@@ -109,14 +105,14 @@ class FCM extends Object{
                    ),
                ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
          }else{
-           flutterLocalNotificationsPlugin.show(
+          /* flutterLocalNotificationsPlugin.show(
                notification.hashCode,
                Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
                Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
                    iOS: DarwinNotificationDetails(subtitle:notification.body),
                ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
-         }
+        */ }
 
        }
 
