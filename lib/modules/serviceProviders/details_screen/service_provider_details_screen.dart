@@ -148,7 +148,8 @@ class _ServiceProviderDetailsScreenState extends State<ServiceProviderDetailsScr
 
                 ],),
                 InkWell(onTap: (){
-                  launch("tel://0${widget.serviceProviderData.phone!}");
+                  launch("tel://${widget.serviceProviderData.contact_phone!.isNotEmpty?widget.serviceProviderData.contact_phone:
+                  widget.serviceProviderData.phone}");
                 },child: Row(children: [
                   Container(
                     child: Icon(Icons.local_phone,color: C.BASE_BLUE,size: D.default_20,),),
