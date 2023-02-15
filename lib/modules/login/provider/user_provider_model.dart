@@ -250,6 +250,9 @@ setCurrentUserData(UserData user,){
     /// add quotes to json string
     jsonString = jsonString.replaceAll('{', '{"');
     jsonString = jsonString.replaceAll(':', '": "');
+    jsonString = jsonString.replaceAll('": "//', '://');
+    jsonString = jsonString.replaceAll('"https"', 'https');
+    jsonString = jsonString.replaceAll('"http"', 'http');
     jsonString = jsonString.replaceAll(',', '", "');
     jsonString = jsonString.replaceAll('}', '"}');
     /// remove quotes on object json string
