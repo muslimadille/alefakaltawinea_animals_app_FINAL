@@ -57,12 +57,12 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     super.initState();
     getRegions();
     getAppInfo();
-    FCM().notificationSubscrib(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar");
     appStataProviderModel=Provider.of<AppStataProviderModel>(context,listen:false);
     userProviderModel=Provider.of<UserProviderModel>(context,listen: false);
     adsSliderProviderModel=Provider.of<AdsSliderProviderModel>(context,listen: false);
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       await _initPref(context);
+      FCM().notificationSubscrib(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar");
       adsSliderProviderModel!.getAdsSlider();
       await appStataProviderModel!.getAppActiveState(context);
       await appStataProviderModel!.getApplePayState();

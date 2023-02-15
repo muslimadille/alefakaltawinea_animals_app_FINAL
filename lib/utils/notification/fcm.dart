@@ -46,18 +46,28 @@ class FCM extends Object{
                 android: AndroidNotificationDetails("com.google.firebase.messaging.default_notification_channel_id","")
             ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
       }else{
-        await flutterLocalNotificationsPlugin.show(
+        /*await flutterLocalNotificationsPlugin.show(
             notification.hashCode,
             Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
             Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
-              iOS: DarwinNotificationDetails(subtitle:notification.body),
-            ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
+              iOS: DarwinNotificationDetails(),
+            ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");*/
       }
 
     }
-  } openClosedAppFromNotification()async{
+  }
+  openClosedAppFromNotification()async{
 
+    RemoteMessage? initialMessage =
+    await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      await Fluttertoast.showToast(msg: tr("initialMessage:${initialMessage}"),backgroundColor: Colors.red,textColor: Colors.white,);
+      Map<String,dynamic> messageMap=json.decode(initialMessage.data["data"]);
+      await serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotification,
+          payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
+    }
     final NotificationAppLaunchDetails? notificationAppLaunchDetails =
         await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
     if(notificationAppLaunchDetails!.didNotificationLaunchApp){
@@ -65,13 +75,15 @@ class FCM extends Object{
 
       await serialiseAndNavigate(notificationAppLaunchDetails.notificationResponse);
     }
+
   }
    init()async{
+
      await firebaseMessaging.app.setAutomaticDataCollectionEnabled(true);
      /// open app work on background only
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       Map<String,dynamic> messageMap=json.decode(message.data["data"]);
-      serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotificationAction,
+      serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotification,
           payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
     });
     ///background message
@@ -133,7 +145,9 @@ class FCM extends Object{
             requestBadgePermission: false,
             requestSoundPermission: false,
             onDidReceiveLocalNotification:
-                (int? id, String? title, String? body, String? payload) async {}
+                (int? id, String? title, String? body, String? payload) async {
+
+                }
         ) );
       }else{
         initializationSettings=InitializationSettings();
