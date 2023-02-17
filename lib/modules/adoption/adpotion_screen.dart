@@ -44,8 +44,8 @@ class _AdoptionScreenState extends State<AdoptionScreen> {
 
   }
   @override
-  void dispose() {
-    adoptionProviderModel!.setShowRegister(false);
+  void dispose() async{
+    await adoptionProviderModel!.setShowRegister(false);
     super.dispose();
   }
   @override

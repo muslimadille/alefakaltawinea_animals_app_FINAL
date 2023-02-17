@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:alefakaltawinea_animals_app/modules/ads/provider/ads_slider_provider.dart';
 import 'package:alefakaltawinea_animals_app/modules/baseScreen/baseScreen.dart';
 import 'package:alefakaltawinea_animals_app/modules/categories_screen/mainCategoriesScreen.dart';
@@ -20,6 +22,7 @@ import 'package:alefakaltawinea_animals_app/utils/notification/fcm.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_intro/flutter_intro.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -68,7 +71,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       await appStataProviderModel!.getAppActiveState(context);
       await appStataProviderModel!.getApplePayState();
       if(Constants.IS_FORCE_UPDATE){
-        MyUtils.basePopup(context, body: UpdateAppPopup(content: tr("update"),onOkPressed: (){},));
+        MyUtils.basePopup(context, body: UpdateAppPopup(content: tr("update"),onOkPressed: (){
+          Future.delayed(Duration(milliseconds: 100)).then((value){
+      if(Platform.isIOS){
+        exit(0);
+      }else{
+        SystemNavigator.pop();
+      }
+          });
+        },));
       }else{
         login();
       }

@@ -26,6 +26,10 @@ class _UpdateAppPopupState extends State<UpdateAppPopup> with InputValidationMix
     super.initState();
   }
   @override
+  void dispose() {
+    widget.onOkPressed();
+  }
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(D.default_10),
