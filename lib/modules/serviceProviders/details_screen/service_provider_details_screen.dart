@@ -155,7 +155,8 @@ class _ServiceProviderDetailsScreenState extends State<ServiceProviderDetailsScr
                     child: Icon(Icons.local_phone,color: C.BASE_BLUE,size: D.default_20,),),
                   Container(
                     padding:EdgeInsets.only(left:D.default_10,right:D.default_10),
-                    child: Text(widget.serviceProviderData.phone!,style: S.h4(color: C.BASE_BLUE),),),
+                    child: Text("${widget.serviceProviderData.contact_phone!.isNotEmpty?widget.serviceProviderData.contact_phone:
+                    widget.serviceProviderData.phone}",style: S.h4(color: C.BASE_BLUE),),),
                   (widget.serviceProviderData.website??"").isNotEmpty?InkWell(onTap: ()async{
                     await _launchURLBrowser();
                   },
