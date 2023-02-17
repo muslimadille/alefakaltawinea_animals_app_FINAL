@@ -30,7 +30,7 @@ class Constants extends Object{
   static double DEVICE_RATIO=0.0;
   static double DEVICE_HEIGHT=0.0;
   static double DEVICE_WIDTH=0.0;
-  static double APP_VERSION=185;
+  static double APP_VERSION=186;
   static bool IS_FORCE_UPDATE=false;
 
 

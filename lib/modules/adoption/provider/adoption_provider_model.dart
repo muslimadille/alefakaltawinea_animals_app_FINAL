@@ -19,7 +19,7 @@ class AdoptionProviderModel with ChangeNotifier{
   }
    setShowRegister(bool value)async{
     shoewRegister=value;
-    //notifyListeners();
+    notifyListeners();
   }
   void setSelectedCategoryIndex(int value){
     selectedCategoryIndex=value;
