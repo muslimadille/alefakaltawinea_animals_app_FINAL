@@ -37,9 +37,9 @@ class UserProviderModel with ChangeNotifier{
   UpdateProfileApi updateProfileApi=UpdateProfileApi();
   login(String phone,String password,BuildContext ctx,bool isSplash) async {
     setIsLoading(true);
-    bool isLoged= await getSavedUser(ctx);
+    //bool isLoged= await getSavedUser(ctx);
 
-    if(!isLoged){
+    if(true){
       MyResponse<UserData> response =
       await loginApi.login(phone, password);
 
@@ -92,7 +92,7 @@ class UserProviderModel with ChangeNotifier{
 
   Future<bool> getSavedUser(BuildContext ctx)async{
     String user=await Constants.prefs!.getString(Constants.SAVED_USER_KEY!)??"";
-      if(user.isNotEmpty){
+      if(user.isNotEmpty&&!user.contains("user_type_id: 6")){
          Constants.currentUser=UserData.fromJson(jsonDecode(_convertToJsonStringQuotes(raw:user)));
         setCurrentUserData(Constants.currentUser!);
         setIsLoading(false);
@@ -249,15 +249,15 @@ setCurrentUserData(UserData user,){
     String jsonString = raw.replaceAll(" ", "");
     /// add quotes to json string
     jsonString = jsonString.replaceAll('{', '{"');
-    jsonString = jsonString.replaceAll(':', '": "');
+    jsonString = jsonString.replaceAll(':', '":');
     jsonString = jsonString.replaceAll('": "//', '://');
     jsonString = jsonString.replaceAll('"https"', 'https');
     jsonString = jsonString.replaceAll('"http"', 'http');
-    jsonString = jsonString.replaceAll(',', '", "');
-    jsonString = jsonString.replaceAll('}', '"}');
+    jsonString = jsonString.replaceAll(',', ',"');
+    jsonString = jsonString.replaceAll('}', '}');
     /// remove quotes on object json string
     jsonString = jsonString.replaceAll('"{"', '{"');
-    jsonString = jsonString.replaceAll('"}"', '"}');
+    jsonString = jsonString.replaceAll('"}"', '}');
     /// remove quotes on array json string
     jsonString = jsonString.replaceAll('"[{', '[{');
     jsonString = jsonString.replaceAll('}]"', '}]');

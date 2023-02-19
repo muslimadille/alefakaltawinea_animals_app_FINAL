@@ -89,16 +89,16 @@ class _SettingScreenState extends State<SettingScreen> {
 
                             )
                           ],),
-                        _itemText(tr("buy_card"), () {
+                        Constants.currentUser!=null?Constants.currentUser!.userTypeId!="6"?_itemText(tr("buy_card"), () {
                           if(Constants.currentUser==null){
                             MyUtils.navigate(context, RegistrationScreen());
                           }else{
                             MyUtils.navigate(context, AddCartScreen());
                           }
-                        }),
-                        _itemText(tr("add_your_shop"), (){
+                        }):Container():Container(),
+                        Constants.currentUser!=null?Constants.currentUser!.userTypeId!="6"?_itemText(tr("add_your_shop"), (){
                           MyUtils.navigate(context, AddStoreScreen());
-                        }),
+                        }):Container():Container(),
                         _itemText(tr("contact_us"), () {
                           MyUtils.navigate(context, ContactUsScreen());
                         }),
