@@ -37,9 +37,9 @@ class UserProviderModel with ChangeNotifier{
   UpdateProfileApi updateProfileApi=UpdateProfileApi();
   login(String phone,String password,BuildContext ctx,bool isSplash) async {
     setIsLoading(true);
-    bool isLoged= await getSavedUser(ctx);
+    //bool isLoged= await getSavedUser(ctx);
 
-    if(!isLoged){
+    if(true){
       MyResponse<UserData> response =
       await loginApi.login(phone, password);
 
