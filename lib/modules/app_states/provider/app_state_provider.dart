@@ -37,7 +37,6 @@ class AppStataProviderModel with ChangeNotifier{
     setIsLoading(true);
     Map<String,dynamic> response =
     await appStatesApi.getApplePayState()  ;
-    Constants.IS_FORCE_UPDATE=response["is_force_update"]&(Constants.APP_VERSION<response["app_version"]);
     if (IO.Platform.isIOS) {
       Constants.APPLE_PAY_STATE=(response["is_payment_enable"])&(Constants.APP_VERSION<response["app_version"]);
     }else{

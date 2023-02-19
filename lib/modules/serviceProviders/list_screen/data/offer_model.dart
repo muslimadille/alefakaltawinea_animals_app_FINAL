@@ -1,5 +1,5 @@
 class OfferModel {
-  int? id;
+  dynamic id;
   String? userId;
   String? price;
   String? discountValue;
