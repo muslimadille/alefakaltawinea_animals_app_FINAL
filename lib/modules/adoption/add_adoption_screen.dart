@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:alefakaltawinea_animals_app/modules/adoption/data/adoption_categories_model.dart';
 import 'package:alefakaltawinea_animals_app/modules/adoption/data/animal_pager_list_model.dart';
 import 'package:alefakaltawinea_animals_app/modules/adoption/provider/adoption_provider_model.dart';
 import 'package:alefakaltawinea_animals_app/modules/baseScreen/baseScreen.dart';
@@ -58,6 +59,7 @@ class _AddAdoptionScreenState extends State<AddAdoptionScreen> with InputValidat
   bool imageValid=true;
   var imageFile;
   String selectedCity="";
+  AdoptionCategoriesModel?_selectedCategory;
 
   void initState() {
     super.initState();
@@ -186,6 +188,7 @@ class _AddAdoptionScreenState extends State<AddAdoptionScreen> with InputValidat
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          widget.data==null? _animalType():SizedBox(),
           _name(),
           _phone(),
           _age(),
@@ -488,7 +491,7 @@ class _AddAdoptionScreenState extends State<AddAdoptionScreen> with InputValidat
 
 Widget _addBtn(){
     return InkWell(onTap: () async {
-      if(_cLassImage!=null&&!adoptionProviderModel!.isLoading){
+      if(_cLassImage!=null&&!adoptionProviderModel!.isLoading&&_selectedCategory!=null){
         if (_registerFormGlobalKey.currentState!.validate()) {
           _registerFormGlobalKey.currentState!.save();
           MultipartFile mFile = await MultipartFile.fromFile(
@@ -497,7 +500,7 @@ Widget _addBtn(){
           FormData formData =  FormData.fromMap({
             "name":_nameController.text,
             "phone":_phoneController.text,
-            "category_id":adoptionProviderModel!.categoriesList[adoptionProviderModel!.selectedCategoryIndex].id,
+            "category_id":_selectedCategory!.id,
             "age":_ageController.text,
             "type":_typeController.text,
             "gender":_selectedGenders,
@@ -508,7 +511,7 @@ Widget _addBtn(){
             "conditions":_conditionsController.text,
             "photo": mFile,
           });
-          adoptionProviderModel!.setAnimal(context,formData,adoptionProviderModel!.categoriesList[adoptionProviderModel!.selectedCategoryIndex].id!);
+          adoptionProviderModel!.setAnimal(context,formData,_selectedCategory!.id!);
         }
       }else{
         setState(() {
@@ -552,7 +555,7 @@ Widget _addBtn(){
           FormData formData =  FormData.fromMap({
             "name":_nameController.text,
             "phone":_phoneController.text,
-            "category_id":adoptionProviderModel!.categoriesList[adoptionProviderModel!.selectedCategoryIndex].id,
+            "category_id":widget.data!.categoryId,
             "age":_ageController.text,
             "type":_typeController.text,
             "gender":_selectedGenders,
@@ -703,14 +706,21 @@ Widget _addBtn(){
       ),
     );
   }
-  Widget _citySpinner() {
+  Widget _animalType() {
     return Container(
       height: D.default_50,
       margin: EdgeInsets.only(
           left: D.default_5, right: D.default_5, top: D.default_10),
       padding: EdgeInsets.only(left: D.default_20, right: D.default_20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(D.default_5),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(D.default_10),
+          boxShadow:[BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              offset:Offset(0,0),
+              blurRadius:3,
+              spreadRadius: 0.5
+          )]
       ),
       child: Center(
         child: DropdownButton<String>(
@@ -721,25 +731,25 @@ Widget _addBtn(){
           hint: Container(
             margin: EdgeInsets.all(D.default_10),
             child: Text(
-              _selectedCity,
+              _selectedCategory!=null?_selectedCategory!.name??'':tr("select_animal_type"),
               style: S.h2(color: Colors.grey),
             ),
           ),
           isExpanded: false,
-          items: _citiesList.map((String value) {
+          items: List.generate(adoptionProviderModel!.categoriesList.length, (index){
             return DropdownMenuItem<String>(
-              value: value,
+              value: adoptionProviderModel!.categoriesList[index].name??'',
               child: Container(
                 child: Text(
-                  value,
+                  adoptionProviderModel!.categoriesList[index].name??'',
                   style: S.h4(color: Colors.grey),
                 ),
               ),
             );
-          }).toList(),
+          }),
           onChanged: (value) {
             setState(() {
-              _selectedCity = value!;
+              _selectedCategory = adoptionProviderModel!.categoriesList.where((element) => element.name==value).single;
             });
           },
         ),
@@ -747,6 +757,7 @@ Widget _addBtn(){
     );
   }
   List<String>_citiesList=[];
+
   _getCitiesNameList(){
     for(int i=0;i<Constants.STATES.length;i++){
       _citiesList.add(Constants.STATES[i].name??"");

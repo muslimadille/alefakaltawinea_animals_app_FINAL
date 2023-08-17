@@ -216,7 +216,14 @@
  "show_phone": "إظهار الرقم",
  "done": "تم",
  "update": "تم إصدار نسخة جديدة من تطبيق أليفك علي المتجر قم بالتحديث الآن",
- "update_btn": "تحديث"
+ "update_btn": "تحديث",
+ "select_animal_type": "اختر نوع اليفك",
+ "Privacy_screen_title": "سياسة  الخصوصية",
+ "select_reagion": "اختر المنطقة",
+ "error_email": "ادخل بريد الكتروني صحيح"
+
+
+
 
 
 

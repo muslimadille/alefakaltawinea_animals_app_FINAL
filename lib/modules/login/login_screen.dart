@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> with  InputValidationMixin{
 
           ),
           keyboardType: TextInputType.phone,
-
+          maxLength: 9,
           obscureText: false,
           cursorColor: C.BASE_BLUE,
           autofocus: false,
@@ -218,11 +218,7 @@ class _LoginScreenState extends State<LoginScreen> with  InputValidationMixin{
           , _passwordController.text,context,false);
     }
   }
- initSavedUser(){
-  if( Constants.prefs!.get(Constants.SAVED_PHONE_KEY!)!=null&&Constants.prefs!.get(Constants.SAVED_PASSWORD_KEY!)!=null){
-    userProviderModel!.login(Constants.prefs!.get(Constants.SAVED_PHONE_KEY!).toString(),Constants.prefs!.get(Constants.SAVED_PASSWORD_KEY!).toString(),context,false);
-  }
- }
+
 }
 
 

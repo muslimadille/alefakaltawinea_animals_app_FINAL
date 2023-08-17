@@ -31,6 +31,7 @@ class FCM extends Object{
       debugLabel: "Main Navigator");
 
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    print(message.toMap());
     print('Handling a background message ${message.messageId}');
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
@@ -39,8 +40,10 @@ class FCM extends Object{
       if(android!=null){
         await flutterLocalNotificationsPlugin.show(
             notification.hashCode,
-            Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
-            Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
+            notification.title,
+            notification.body,
+            //Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
+            //Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
             NotificationDetails(
                 android: AndroidNotificationDetails("com.google.firebase.messaging.default_notification_channel_id","")
             ),payload: "${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}");
@@ -78,6 +81,7 @@ class FCM extends Object{
      await firebaseMessaging.app.setAutomaticDataCollectionEnabled(true);
      /// open app work on background only
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      jsonEncode(message.toMap());
       Map<String,dynamic> messageMap=json.decode(message.data["data"]);
       serialiseAndNavigate(NotificationResponse(notificationResponseType:NotificationResponseType.selectedNotification,
           payload:"${messageMap["notification_data"]["type"].toString()}#${messageMap["notification_data"]["ads_id"].toString()}#${messageMap["notification_data"]["url"].toString()}" ));
@@ -87,6 +91,7 @@ class FCM extends Object{
      ///foreground message
      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
        RemoteNotification? notification = message.notification;
+       jsonEncode(message.toMap());
 
        AndroidNotification? android = message.notification?.android;
        Map<String,dynamic> messageMap=json.decode(message.data["data"]);
@@ -94,8 +99,10 @@ class FCM extends Object{
          if(android!=null){
            flutterLocalNotificationsPlugin.show(
                notification.hashCode,
-               Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
-               Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
+               notification.title,
+               notification.body,
+               //Constants.utilsProviderModel!.isArabic?messageMap["notification_title"]??"":messageMap["notification_title_en"]??"",
+               //Constants.utilsProviderModel!.isArabic?messageMap["notification_data"]["message"]:messageMap["notification_data"]["message_en"],
                NotificationDetails(
                    android: AndroidNotificationDetails(
                        "alefak","alefak",
@@ -211,7 +218,7 @@ class FCM extends Object{
       return;
     }
     /// service provider
-    if(type=="2"){
+    else if(type=="2"){
       Get.back();
        await Get.off(()=>MainCategoriesScreen(navigateTo:()async{
         GetServiceProvidersApi api=GetServiceProvidersApi();
@@ -223,7 +230,7 @@ class FCM extends Object{
       return;
     }
     /// url
-    if (type=="3") {
+    else if (type=="3") {
        await Get.off(()=>MainCategoriesScreen(navigateTo:() async{
         final String ure=link;
         String  url = ure;
@@ -234,6 +241,8 @@ class FCM extends Object{
         }
       } ,),preventDuplicates: false);
 
+    }else{
+      await Get.to(MainCategoriesScreen());
     }
   }
 }

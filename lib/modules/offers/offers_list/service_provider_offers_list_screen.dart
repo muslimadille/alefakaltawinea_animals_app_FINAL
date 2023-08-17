@@ -4,11 +4,13 @@ import 'package:alefakaltawinea_animals_app/utils/my_utils/baseDimentions.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseTextStyle.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myColors.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
+import 'package:alefakaltawinea_animals_app/utils/my_utils/providers.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/resources.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_widgets/transition_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ServiceProviderOffersScreen extends StatefulWidget {
@@ -93,9 +95,9 @@ class _ServiceProviderOffersScreenState extends State<ServiceProviderOffersScree
                       }
                     },
                     child: TransitionImage(
-                      (widget.serviceProviderData.offers![index].photo??"").contains("http")?
-                      (widget.serviceProviderData.offers![index].photo??""):
-                      "https://alefak.com/uploads/${(widget.serviceProviderData.offers![index].photo??"")}",
+                      _getImage(index).contains("http")?
+                      _getImage(index):
+                      "https://alefak.com/uploads/${_getImage(index)}",
                     fit: BoxFit.cover,
                     radius: D.default_10,
                   ),),);
@@ -104,6 +106,9 @@ class _ServiceProviderOffersScreenState extends State<ServiceProviderOffersScree
               semanticIndexOffset: 1,
             )),
       ]),):_noData();
+  }
+  String _getImage(int index){
+    return context.read<UtilsProviderModel>().isArabic?widget.serviceProviderData.offers![index].photo??'':(widget.serviceProviderData.offers![index].photoEn??'');
   }
   _launchURLBrowser(String url) async {
     if (await canLaunch(url)) {

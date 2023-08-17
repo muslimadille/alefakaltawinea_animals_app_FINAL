@@ -23,7 +23,8 @@ class BaseDioUtils {
       dio!.interceptors.add(InterceptorsWrapper(onRequest:
           (RequestOptions options, RequestInterceptorHandler handler) async {
            options.headers['Accept-Language'] = Constants.SELECTED_LANGUAGE;
-        //options.queryParameters['version'] = BaseConfig.APP_VERSION_NAME;
+           options.headers['App-Version'] = Constants.APP_VERSION;
+           options.headers['User-Agent'] = Constants.DEVICE_TYPE;
         var url = "${options.path}";
 
         print("$url : REQUEST : METHOD : ${options.method}");

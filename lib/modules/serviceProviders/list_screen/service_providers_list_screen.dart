@@ -72,7 +72,7 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen>  
           serviceProvidersProviderModel!.isLoading&&((serviceProvidersProviderModel!.serviceProviderModel)!=null?serviceProvidersProviderModel!.serviceProviderModel!.data!.isEmpty:true)?LoadingProgress():_listitem(),
           serviceProvidersProviderModel!.serviceProviderModel!=null?serviceProvidersProviderModel!.isLoading&&serviceProvidersProviderModel!.serviceProviderModel!.data!.isNotEmpty?
           Container():Container():Container(),
-          serviceProvidersProviderModel!.isLoading?Container(height: MediaQuery.of(context).size.height,width: MediaQuery.of(context).size.width,):Container()
+          serviceProvidersProviderModel!.isLoading?Container(color: Colors.black.withOpacity(0.3),height: MediaQuery.of(context).size.height,width: MediaQuery.of(context).size.width,):Container()
         ],)),
             serviceProvidersProviderModel!.serviceProviderModel!=null?serviceProvidersProviderModel!.isLoading&&serviceProvidersProviderModel!.serviceProviderModel!.data!.isNotEmpty?
             Container(height: D.default_60,width: D.default_250,child: Center(child: SpinKitCircle(

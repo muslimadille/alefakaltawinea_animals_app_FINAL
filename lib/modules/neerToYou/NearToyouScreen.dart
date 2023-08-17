@@ -33,12 +33,10 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
   static final CameraPosition _myCameraPosition = CameraPosition(
       bearing: 0.0,
       tilt: 0.0,
-      zoom: 9,
       target: LatLng(_position!.latitude, _position!.longitude));
 
   ServiceProvidersProviderModel? serviceProvidersProviderModel;
   CategoriesProviderModel? categoriesProviderModel;
-  CategoriesDataModel? selectedCategory;
 
   @override
   void initState() {
@@ -81,6 +79,7 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
             serviceProvidersProviderModel!.currentSelectedShop != null
                 ? _shopItem()
                 : Container(),
+            serviceProvidersProviderModel!.isLoading?LoadingProgress():SizedBox()
           ],
         ));
   }
@@ -96,6 +95,7 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
 
   Widget _buildMap() {
     return GoogleMap(
+      minMaxZoomPreference:MinMaxZoomPreference(10, 30),
       initialCameraPosition:
           serviceProvidersProviderModel!.currentCameraPosition != null
               ? serviceProvidersProviderModel!.currentCameraPosition!
@@ -103,7 +103,7 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
       mapType: MapType.normal,
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
+      zoomControlsEnabled: true,
       onMapCreated: (GoogleMapController controller) {
         serviceProvidersProviderModel!.mapController.complete(controller);
       },
@@ -114,87 +114,24 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
   Future<void> _getMyCurrentLocation() async {
     final GoogleMapController controller =
         await serviceProvidersProviderModel!.mapController.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_myCameraPosition));
-    for(int index=0;index< categoriesProviderModel!.categoriesList.length;index++){
-      serviceProvidersProviderModel!.getClosestList(
+    serviceProvidersProviderModel!.currentCameraPosition=CameraPosition(
+        bearing: 0.0,
+        tilt: 0.0,
+        zoom: 14,
+        target: LatLng(_position!.latitude, _position!.longitude));
+    await controller.animateCamera(CameraUpdate.newCameraPosition(serviceProvidersProviderModel!.currentCameraPosition!));
+      await serviceProvidersProviderModel!.getAllClosestList(
           context,
-          categoriesProviderModel!.categoriesList[index].id!,
           _position!.latitude.toString(),
           _position!.longitude.toString(),
-          int.parse(categoriesProviderModel!.categoriesList[index].color!.replaceAll("#", "0xff")),
-        true
+          categoriesProviderModel!.categoriesList
       );
-    }
+
 
   }
 
-  Widget _categories() {
-    return AspectRatio(
-        aspectRatio: 1.73,
-        child: CustomScrollView(slivers: [
-          SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 0,
-                mainAxisSpacing: 0,
-                childAspectRatio: 1.73,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return _newIem(index);
-                },
-                childCount: categoriesProviderModel!.categoriesList.length,
-                semanticIndexOffset: 1,
-              )),
-        ]));
-  }
 
-  Widget _categoriesIem(int index) {
-    return InkWell(
-        onTap: () {
-          setState(() {
-            selectedCategory = categoriesProviderModel!.categoriesList[index];
-            serviceProvidersProviderModel!.getClosestList(
-                context,
-                categoriesProviderModel!.categoriesList[index].id!,
-                _position!.latitude.toString(),
-                _position!.longitude.toString(),
-              int.parse(categoriesProviderModel!.categoriesList[index].color!.replaceAll("#", "0xff")),
-              false
-            );
-          });
-        },
-        child: Stack(
-          alignment: AlignmentDirectional.bottomCenter,
-          children: [
-            Container(
-              color: categoriesProviderModel!.categoriesList[index].color !=
-                      null
-                  ? Color(int.parse(
-                      "${categoriesProviderModel!.categoriesList[index].color!.replaceAll("#", "0xff")}"))
-                  : Color(0xffF38183),
-            ),
-            Positioned(
-                child: TransitionImage(
-              categoriesProviderModel!.categoriesList[index].photo!.isNotEmpty
-                  ? categoriesProviderModel!.categoriesList[index].photo!
-                  : Res.SHOP_IC,
-              fit: BoxFit.fitHeight,
-              padding: EdgeInsets.only(top: D.default_30, bottom: D.default_30),
-              width: MediaQuery.of(context).size.width / 2,
-              height: MediaQuery.of(context).size.width / 2,
-            )),
-            Container(
-              height: D.default_40,
-              child: Center(
-                child: Text(
-                    categoriesProviderModel!.categoriesList[index].name!,
-                    style: S.h3(color: Colors.white)),
-              ),
-            )
-          ],
-        ));
-  }
+
 
   Widget _shopItem() {
     return  serviceProvidersProviderModel!.currentSelectedShop!=null?InkWell(
@@ -208,7 +145,7 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(D.default_10)),
-              border: Border.all(color: Color(selectedCategory!=null?int.parse(selectedCategory!.color!.replaceAll("#", "0xff")):serviceProvidersProviderModel!.selectedMarkerColor!)),
+              border: Border.all(color: Color(serviceProvidersProviderModel!.selectedCategory!=null?int.parse(serviceProvidersProviderModel!.selectedCategory!.color!.replaceAll("#", "0xff")):serviceProvidersProviderModel!.selectedMarkerColor!)),
               color: Colors.white,
               boxShadow:[BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -223,7 +160,7 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(D.default_10)),
                   color: Colors.white,
-                  border: Border.all(color: Color(selectedCategory!=null?int.parse(selectedCategory!.color!.replaceAll("#", "0xff")):serviceProvidersProviderModel!.selectedMarkerColor!))
+                  border: Border.all(color: Color(serviceProvidersProviderModel!.selectedCategory!=null?int.parse(serviceProvidersProviderModel!.selectedCategory!.color!.replaceAll("#", "0xff")):serviceProvidersProviderModel!.selectedMarkerColor!))
                 ),
                 margin: EdgeInsets.all(D.default_10),
                 child: TransitionImage(
@@ -235,7 +172,7 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
               Expanded(
                   child: Text(
                 "${serviceProvidersProviderModel!.currentSelectedShop!.name}",
-                style: S.h4(color: Color(selectedCategory!=null?int.parse(selectedCategory!.color!.replaceAll("#", "0xff")):serviceProvidersProviderModel!.selectedMarkerColor!))),
+                style: S.h4(color: Color(serviceProvidersProviderModel!.selectedCategory!=null?int.parse(serviceProvidersProviderModel!.selectedCategory!.color!.replaceAll("#", "0xff")):serviceProvidersProviderModel!.selectedMarkerColor!))),
               )
             ],
           )),
@@ -319,30 +256,28 @@ class _NearToYouScreenState extends State<NearToYouScreen> {
     }
 
   }
-  onItemClick(int index){
+  onItemClick(int index)async{
+
     if(index>0){
-      setState(() {
-        selectedCategory = categoriesProviderModel!.categoriesList[index-1];
-        serviceProvidersProviderModel!.getClosestList(
+
+      serviceProvidersProviderModel!.selectedCategory = categoriesProviderModel!.categoriesList[index-1];
+        await serviceProvidersProviderModel!.getClosestList(
             context,
             categoriesProviderModel!.categoriesList[index-1].id!,
             _position!.latitude.toString(),
             _position!.longitude.toString(),
-            int.parse(categoriesProviderModel!.categoriesList[index].color!.replaceAll("#", "0xff")),
-            false
+          categoriesProviderModel!.categoriesList,
         );
-      });
     }else{
-      for(int index=0;index< categoriesProviderModel!.categoriesList.length;index++){
-        serviceProvidersProviderModel!.getClosestList(
+      serviceProvidersProviderModel!.markers.clear();
+      await serviceProvidersProviderModel!.getAllClosestList(
             context,
-            categoriesProviderModel!.categoriesList[index].id!,
             _position!.latitude.toString(),
             _position!.longitude.toString(),
-            int.parse(categoriesProviderModel!.categoriesList[index].color!.replaceAll("#", "0xff")),
-            true
-        );}
+             categoriesProviderModel!.categoriesList
+        );
     }
+
   }
   Widget _newTabsContainer(){
     return Container(

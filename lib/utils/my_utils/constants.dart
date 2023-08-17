@@ -9,12 +9,16 @@ import '../../modules/spalshScreen/data/app_info_model.dart';
 class Constants extends Object{
   static String? SELECTED_LANGUAGE="ar";
   static String? LANGUAGE_KEY="LANGUAGE_KEY";
+  static String? DEVICE_TYPE="";
+  static double APP_VERSION=190;
+
+
   static   SharedPreferences? prefs ;
   static  UserData? currentUser;
   static int OTP_LENGTH=4;
-  static String? SAVED_PHONE_KEY="SAVED_PHONE";
+  //static String? SAVED_PHONE_KEY="SAVED_PHONE";
   static String? SAVED_USER_KEY="SAVED_USER";
-  static String? SAVED_PASSWORD_KEY="SAVED_PASSWORD";
+  //static String? SAVED_PASSWORD_KEY="SAVED_PASSWORD";
   static List<RegionsModel> REGIONS=[];
   static List<Get_states> STATES=[];
   static int currentState=currentUser!=null?int.parse(currentUser!.stateId!.isNotEmpty?currentUser!.stateId??"0":"0"):REGIONS[0].getStates![0].id!;
@@ -30,8 +34,9 @@ class Constants extends Object{
   static double DEVICE_RATIO=0.0;
   static double DEVICE_HEIGHT=0.0;
   static double DEVICE_WIDTH=0.0;
-  static double APP_VERSION=188;
   static bool IS_FORCE_UPDATE=false;
+  static String? TOKEN_KEY="TOKEN_KEY";
+
 
 
 

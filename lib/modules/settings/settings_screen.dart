@@ -1,5 +1,6 @@
 import 'package:alefakaltawinea_animals_app/modules/baseScreen/baseScreen.dart';
 import 'package:alefakaltawinea_animals_app/modules/registeration/registration_screen.dart';
+import 'package:alefakaltawinea_animals_app/modules/settings/privacy_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/settings/terms_screen.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseDimentions.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseTextStyle.dart';
@@ -105,13 +106,16 @@ class _SettingScreenState extends State<SettingScreen> {
                          _itemText(tr("Terms_and_Conditions"), (){
                           MyUtils.navigate(context, TermsScreen());
                         }),
+                        _itemText(tr("Privacy_screen_title"), (){
+                          MyUtils.navigate(context, PrivacyScreen());
+                        }),
                         Constants.currentUser!=null?Constants.currentUser!.userTypeId.toString()=="6"? _itemText(tr("logout"), ()async{
-                          await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,"");
-                          await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,"");
+                          UserProviderModel().logout(context);
+                          /*await Constants.prefs!.setString(Constants.TOKEN_KEY!,"");
                           Apis.TOKEN_VALUE="";
                           userProviderModel!.currentUser=null;
                           Constants.currentUser=null;
-                          MyUtils.navigateAsFirstScreen(context, SplashScreen());
+                          MyUtils.navigateAsFirstScreen(context, SplashScreen());*/
                         }):Container():Container()
                       ],
                     ),

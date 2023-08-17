@@ -37,6 +37,7 @@ class _AdsSliderItemState extends State<AdsSliderItem> {
         Container(
         margin: EdgeInsets.only(left: D.default_10,right: D.default_10),
         width: double.infinity,
+
         child:Column(children: [
           Expanded(child:
           InkWell(
@@ -86,6 +87,7 @@ class _AdsSliderItemState extends State<AdsSliderItem> {
             fit: BoxFit.cover,
             radius:D.default_15,
             width: double.infinity,
+              backgroundColor: Colors.white,
           ),)),
           Container(
             height: D.default_40,

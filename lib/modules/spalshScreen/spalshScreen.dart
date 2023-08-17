@@ -9,6 +9,7 @@ import 'package:alefakaltawinea_animals_app/modules/homeTabsScreen/provider/intr
 import 'package:alefakaltawinea_animals_app/modules/login/login_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/login/provider/user_provider_model.dart';
 import 'package:alefakaltawinea_animals_app/modules/registeration/registration_screen.dart';
+import 'package:alefakaltawinea_animals_app/utils/my_utils/apis.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseDimentions.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseTextStyle.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
@@ -59,15 +60,18 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    getRegions();
-    getAppInfo();
     appStataProviderModel=Provider.of<AppStataProviderModel>(context,listen:false);
     userProviderModel=Provider.of<UserProviderModel>(context,listen: false);
     adsSliderProviderModel=Provider.of<AdsSliderProviderModel>(context,listen: false);
+    if(Platform.isIOS){
+      Constants.DEVICE_TYPE="ios";
+    }else{
+      Constants.DEVICE_TYPE="android";
+    }
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       await _initPref(context);
-      FCM().notificationSubscrib(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar");
-      adsSliderProviderModel!.getAdsSlider();
+      await FCM().notificationSubscrib(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar");
+      await adsSliderProviderModel!.getAdsSlider();
       await appStataProviderModel!.getAppActiveState(context);
       await appStataProviderModel!.getApplePayState();
       if(Constants.IS_FORCE_UPDATE){
@@ -81,7 +85,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           });
         },));
       }else{
-        login();
+        await login();
+
       }
 
     });
@@ -126,9 +131,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
 
 
-  void getRegions(){
+   getRegions()async{
     Constants.STATES.clear();
-    regionsApi.getRegions().then((value) {
+    await regionsApi.getRegions().then((value) {
       Constants.REGIONS=value.data;
       for(int i=0;i<Constants.REGIONS.length;i++){
         Constants.STATES.addAll( Constants.REGIONS[i].getStates!);
@@ -136,13 +141,16 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     });
 
   }
-  void getAppInfo(){
-    regionsApi.getAppInfo().then((value) {
+   getAppInfo()async{
+    await regionsApi.getAppInfo().then((value) {
       Constants.APP_INFO=value.data;
     });
 
   }
    _initPref(BuildContext ctx)async{
+    if((Constants.prefs!.getString(Constants.TOKEN_KEY!)??'').isNotEmpty){
+      Apis.TOKEN_VALUE=Constants.prefs!.getString(Constants.TOKEN_KEY!)??'';
+    }
     if(Constants.prefs!.get(Constants.LANGUAGE_KEY!)!=null){
       if(Constants.prefs!.get(Constants.LANGUAGE_KEY!)=="ar"){
         utilsProviderModel!.setLanguageState("ar");
@@ -174,12 +182,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       await Constants.prefs!.setString(Constants.LANGUAGE_KEY!, "en");
     }
   }
-  void login()async{
-    String phone=await Constants.prefs!.getString(Constants.SAVED_PHONE_KEY!)??"";
-    String password=await Constants.prefs!.getString(Constants.SAVED_PASSWORD_KEY!)??"";
-    if(phone.isNotEmpty&&password.isNotEmpty){
-      userProviderModel!.login(phone, password,context,false);
-    }else{
+   login()async{
+    await UserProviderModel().getSavedUser(context).then((value)async{
+      await getRegions();
+      await getAppInfo();
       await Future.delayed(Duration(milliseconds: 1000)).then((value) async {
         if(appStataProviderModel!.app_active_state){
           MyUtils.navigateAsFirstScreen(context, MaintainanceScreen());
@@ -193,6 +199,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           }
         }
       });
-    }
+    });
   }
 }

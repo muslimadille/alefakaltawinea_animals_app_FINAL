@@ -2,12 +2,14 @@
 import 'dart:async';
 
 import 'package:alefakaltawinea_animals_app/data/dio/my_rasponce.dart';
+import 'package:alefakaltawinea_animals_app/modules/categories_screen/data/categories_model.dart';
 import 'package:alefakaltawinea_animals_app/modules/fav/data/fav_api.dart';
 import 'package:alefakaltawinea_animals_app/modules/serviceProviders/details_screen/service_provider_details_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/serviceProviders/list_screen/data/getServiceProvidersApi.dart';
 import 'package:alefakaltawinea_animals_app/modules/serviceProviders/list_screen/data/serviceProvidersModel.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/apis.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
+import 'package:flutter/Material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -29,6 +31,8 @@ class ServiceProvidersProviderModel with ChangeNotifier {
   Data? currentSelectedShop;
   int?selectedMarkerColor;
   bool fetchEnd=true;
+  CategoriesDataModel? selectedCategory;
+
 
   /// ..........categories...........
   ServiceProviderModel? serviceProviderModel;
@@ -79,23 +83,25 @@ class ServiceProvidersProviderModel with ChangeNotifier {
 
   }
 
-  getClosestList(BuildContext ctx,int categoryId,String lat,String long,int color,bool all) async {
+  getClosestList(BuildContext ctx,int categoryId,String lat,String long,List<CategoriesDataModel> categoriesList) async {
     setIsLoading(true);
     MyResponse<List<Data>> response =
     await getServiceProvidersApi.getClosest(categoryId,lat,long);
 
     if (response.status == Apis.CODE_SUCCESS &&response.data!=null){
-      currentLocationsList.clear();
-      currentLocationsList.addAll(response.data);
-      if(currentLocationsList.isNotEmpty){
-        //currentSelectedShop=currentLocationsList[0];
-      }else{
-        currentSelectedShop=null;
-        await Fluttertoast.showToast(msg: "عفوا لا يوجد نتائج للعرض");
+      if((response.data!as List<Data>).isNotEmpty){
+        currentLocationsList.clear();
+        currentLocationsList.addAll(response.data);
       }
-        setMarkers(response.data,ctx,color,all);
+
+      currentSelectedShop=null;
+      setMarkers(currentLocationsList,categoriesList,ctx,false);
       setIsLoading(false);
     }else if(response.status == Apis.CODE_SUCCESS &&response.data==null){
+      currentLocationsList.clear();
+      currentSelectedShop=null;
+      setMarkers(currentLocationsList,categoriesList,ctx,false);
+        await Fluttertoast.showToast(msg: "عفوا لا يوجد نتائج للعرض");
       setIsLoading(false);
     }else{
       setIsLoading(false);
@@ -103,6 +109,22 @@ class ServiceProvidersProviderModel with ChangeNotifier {
     notifyListeners();
 
   }
+  getAllClosestList(BuildContext ctx,String lat,String long,List<CategoriesDataModel> categoriesList) async {
+    currentLocationsList.clear();
+    currentSelectedShop=null;
+    setIsLoading(true);
+    for(int i=0;i< categoriesList.length;i++){
+      MyResponse<List<Data>> response =
+      await getServiceProvidersApi.getClosest(categoriesList[i].id??0,lat,long);
+      if (response.status == Apis.CODE_SUCCESS &&response.data!=null){
+        currentLocationsList.addAll(response.data);
+
+      }
+  }
+    setMarkers(currentLocationsList,categoriesList,ctx,true);
+    setIsLoading(false);
+  }
+
 
   void setServiceProviderModel(ServiceProviderModel value){
     if(serviceProviderModel==null){
@@ -127,47 +149,36 @@ class ServiceProvidersProviderModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void setMarkers(List<Data> value ,BuildContext ctx,int color,bool all)async{
-    setIsLoading(true);
+  void setMarkers(List<Data> value ,List<CategoriesDataModel>categories,BuildContext ctx,bool all)async{
     if(!all){
       markers.clear();
     }
       if(value.isNotEmpty){
         for(int i=0;i<value.length;i++){
+          CategoriesDataModel? category=categories.where((element) => element.id.toString()==currentLocationsList[i].categoryId).single;
           LatLng latlng=LatLng(double.parse(value[i].latitude!), double.parse(value[i].longitude!));
           markers.add(Marker(
             onTap: (){
+              selectedCategory=category;
               currentSelectedShop=currentLocationsList[i];
-              selectedMarkerColor=color;
               notifyListeners();
             },
             markerId: MarkerId("${value[i].id}"),
             position: latlng,
-            infoWindow: InfoWindow(
-              title: "${value[i].name}",
-                onTap:(){
-                  //MyUtils.navigate(ctx, ServiceProviderDetailsScreen(value[i]));
-                }
-            ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(HSLColor.fromColor(Color(color)).hue),
+            icon: BitmapDescriptor.defaultMarkerWithHue(HSLColor.fromColor(Color(int.parse(category.color!.replaceAll("#", "0xff")))).hue),
 
           ));
         }
         currentCameraPosition=CameraPosition(
             bearing: 0.0,
             tilt: 0.0,
-            zoom: 9,
+            zoom: 14,
             target: LatLng(double.parse(value[0].latitude!), double.parse(value[0].longitude!)));
         final GoogleMapController controller=await mapController.future;
 
         await controller.animateCamera(CameraUpdate.newCameraPosition(currentCameraPosition!));
 
-      }else{
-        markers.clear();
-
-      }
-setIsLoading(false);
-    notifyListeners();
+      }else{}
   }
   ///...................fav.......................................
   FavApi favApi=FavApi();

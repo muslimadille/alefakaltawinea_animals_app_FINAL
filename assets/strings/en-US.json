@@ -215,9 +215,11 @@
   "show_phone": "Show the number",
   "done": "Done",
   "update": "A new version of the site has been released, please update now",
-  "update_btn": "update"
-
-
+  "update_btn": "update",
+  "select_animal_type": "select animal type",
+  "Privacy_screen_title": "Privacy Screen",
+  "select_reagion": "Select region",
+  "error_email": "please Enter a valid Email"
 
 
 }

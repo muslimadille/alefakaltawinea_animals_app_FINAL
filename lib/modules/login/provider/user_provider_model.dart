@@ -48,9 +48,7 @@ class UserProviderModel with ChangeNotifier{
         if(user.activate=="1"){
           setCurrentUserData(user);
           setIsLoading(false);
-          await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,phone);
-          await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,password);
-          await saveUserToPrefrances(user);
+          await Constants.prefs!.setString(Constants.TOKEN_KEY!,user.token??'');
           if(user.userTypeId.toString()=="6"){
             MyUtils.navigateAsFirstScreen(ctx, SpHomeScreen());
           }else{
@@ -92,12 +90,13 @@ class UserProviderModel with ChangeNotifier{
 
   Future<bool> getSavedUser(BuildContext ctx)async{
     String user=await Constants.prefs!.getString(Constants.SAVED_USER_KEY!)??"";
+
       if(user.isNotEmpty&&!user.contains("user_type_id: 6")){
-         Constants.currentUser=UserData.fromJson(jsonDecode(_convertToJsonStringQuotes(raw:user)));
+         Constants.currentUser=UserData.fromJson(jsonDecode(user));
         setCurrentUserData(Constants.currentUser!);
         setIsLoading(false);
-        await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,Constants.currentUser!.phone??"");
-        await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,"password");
+        await Constants.prefs!.setString(Constants.TOKEN_KEY!,Constants.currentUser!.token??"");
+        Apis.TOKEN_VALUE=Constants.currentUser!.token??'';
         if(Constants.currentUser!.userTypeId.toString()=="6"){
           MyUtils.navigateAsFirstScreen(ctx, SpHomeScreen());
         }else{
@@ -116,8 +115,8 @@ class UserProviderModel with ChangeNotifier{
 
     return false;
   }
-  saveUserToPrefrances(UserData user)async{
-    await Constants.prefs!.setString(Constants.SAVED_USER_KEY!,user.toJson().toString());
+  saveUserToPrefrances(String user)async{
+    await Constants.prefs!.setString(Constants.SAVED_USER_KEY!,user);
   }
 setCurrentUserData(UserData user,){
   currentUser=user;
@@ -125,6 +124,7 @@ setCurrentUserData(UserData user,){
   Apis.TOKEN_VALUE=user.token!;
   notifyListeners();
 }
+
 /// ............REGISTER...............
   RegisterationApi registerationApi=RegisterationApi();
   register(BuildContext ctx,String name,String email,String phone,String password,String confirmPass,{int regionId=1,int stateId=1,bool fromaddcard=false}) async {
@@ -134,9 +134,9 @@ setCurrentUserData(UserData user,){
     if (response.status == Apis.CODE_SUCCESS &&response.data!=null){
       UserData user=response.data;
       setCurrentUserData(user);
-      await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,phone);
-      await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,password);
       setIsLoading(false);
+      await Constants.prefs!.setString(Constants.TOKEN_KEY!,user.token??'');
+
       MyUtils.navigateReplaceCurrent(ctx, OtpScreen("register",tr('register_otp'),code:response.code.toString(),fromaddcard:fromaddcard ,));
     }else if(response.status == Apis.CODE_ACTIVE_USER &&response.data!=null){
       UserData user=response.data;
@@ -160,6 +160,7 @@ setCurrentUserData(UserData user,){
     if (response.status == Apis.CODE_SUCCESS &&response.data!=null){
       UserData user=response.data;
       setCurrentUserData(user);
+      saveUserToPrefrances(jsonEncode(user.toJson()));
       setIsLoading(false);
       if(user.activate=="0"){
         MyUtils.navigateAsFirstScreen(ctx, OtpScreen("update",tr('register_otp'),code:response.code.toString(),));
@@ -235,8 +236,7 @@ setCurrentUserData(UserData user,){
   logout(BuildContext ctx)async{
     setIsLoading(true);
     await loginApi.logout();
-    await Constants.prefs!.setString(Constants.SAVED_PHONE_KEY!,"");
-    await Constants.prefs!.setString(Constants.SAVED_PASSWORD_KEY!,"");
+    await Constants.prefs!.setString(Constants.TOKEN_KEY!,'');
     await Constants.prefs!.setString(Constants.SAVED_USER_KEY!,"");
     Apis.TOKEN_VALUE="";
     Constants.currentUser=null;

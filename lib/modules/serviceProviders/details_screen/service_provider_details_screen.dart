@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../utils/my_utils/input _validation_mixing.dart';
 import '../../../utils/my_widgets/action_bar_widget.dart';
 
 
@@ -23,7 +24,7 @@ class ServiceProviderDetailsScreen extends StatefulWidget {
   _ServiceProviderDetailsScreenState createState() => _ServiceProviderDetailsScreenState();
 }
 
-class _ServiceProviderDetailsScreenState extends State<ServiceProviderDetailsScreen> {
+class _ServiceProviderDetailsScreenState extends State<ServiceProviderDetailsScreen> with InputValidationMixin{
   final _controller = PageController();
   int _currentSliderPager=0;
   @override
@@ -147,9 +148,21 @@ class _ServiceProviderDetailsScreenState extends State<ServiceProviderDetailsScr
                   ),)
 
                 ],),
-                InkWell(onTap: (){
-                  launch("tel://${widget.serviceProviderData.contact_phone!.isNotEmpty?widget.serviceProviderData.contact_phone:
-                  widget.serviceProviderData.phone}");
+                InkWell(onTap: ()async{
+                  String phone=(widget.serviceProviderData.contact_phone??"").isNotEmpty?
+                  isPhoneValide((widget.serviceProviderData.contact_phone??''))?
+                  ('0'+widget.serviceProviderData.contact_phone!):
+                  (widget.serviceProviderData.contact_phone??''):
+                  isPhoneValide((widget.serviceProviderData.phone??''))?
+                  ('0'+widget.serviceProviderData.phone!):
+                  (widget.serviceProviderData.phone??'');
+                  final Uri phoneCallUri = Uri(scheme: 'tel', path:phone);
+                  if (await canLaunch(phoneCallUri.toString())) {
+                    await launch(phoneCallUri.toString());
+                  } else {
+                    throw 'Could not launch phone call';
+                  }
+
                 },child: Row(children: [
                   Container(
                     child: Icon(Icons.local_phone,color: C.BASE_BLUE,size: D.default_20,),),

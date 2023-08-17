@@ -258,10 +258,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> with InputValid
         child: TextFormField(
           controller: _emailController,
           validator: (email) {
-            if (isFieldNotEmpty(email!)) {
+            if (isFieldNotEmpty(email!)&&isEmailValide(email)) {
               return null;
             } else {
-              return tr("enter_email");
+              return tr("error_email");
             }
           },
           decoration: InputDecoration(
@@ -278,7 +278,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> with InputValid
             errorStyle: S.h4(color: Colors.red),
             contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
           ),
-          keyboardType: TextInputType.text,
+          keyboardType: TextInputType.emailAddress,
           obscureText: false,
           cursorColor: C.BASE_BLUE,
           autofocus: false,

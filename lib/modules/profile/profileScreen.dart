@@ -177,7 +177,21 @@ class _ProfileScreenState extends State<ProfileScreen> with InputValidationMixin
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(tr("city"),style: S.h4(color: Colors.black87),),
-        Container(
+        InkWell(
+            onTap: (){
+              MyUtils.basePopup(context, body: RegionsDialogWidget(onItemSelect: (state ) {
+                setState(() {
+                  userProviderModel!.currentUser!.stateId=state.id.toString();
+                  userProviderModel!.currentUser!.regionId=state.regionId.toString();
+                  UserData user=userProviderModel!.currentUser!;
+                  user.regionId=state.regionId.toString();
+                  user.stateId=state.id.toString();
+                  user.stateName=state.name.toString();
+                  userProviderModel!.setCurrentUserData(user);
+                });
+              },) );
+            },
+            child: Container(
             padding: EdgeInsets.only(left:D.default_10,right: D.default_10,top: D.default_5,bottom: D.default_5),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(D.default_100),
@@ -189,21 +203,7 @@ class _ProfileScreenState extends State<ProfileScreen> with InputValidationMixin
                     spreadRadius: 0.5
                 )]
             ),
-            child: InkWell(
-              onTap: (){
-                MyUtils.basePopup(context, body: RegionsDialogWidget(onItemSelect: (state ) {
-                  setState(() {
-                    userProviderModel!.currentUser!.stateId=state.id.toString();
-                    userProviderModel!.currentUser!.regionId=state.regionId.toString();
-                    UserData user=userProviderModel!.currentUser!;
-                    user.regionId=state.regionId.toString();
-                    user.stateId=state.id.toString();
-                    user.stateName=state.name.toString();
-                    userProviderModel!.setCurrentUserData(user);
-                  });
-                },) );
-              },
-              child: Center(child: Text(userProviderModel!.currentUser!.stateName??""
+            child: Center(child: Text(userProviderModel!.currentUser!.stateName??tr("select_reagion")
     ,style: S.h3(color: Colors.white),),),)
 
         )
