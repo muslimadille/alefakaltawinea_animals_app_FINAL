@@ -130,10 +130,9 @@ class _ChoceLanguageScreenState extends State<ChoceLanguageScreen> {
 
           await utilsProviderModel!.setCurrentLocal(
               context, Locale("en", "US"));
-          setState(() {
-            getRegions();
+            await getRegions();
             getAppInfo();
-          });
+
           if(Constants.prefs!.getBool(Constants.IS_FIRST_TIME)??true){
             MyUtils.navigateReplaceCurrent(context, IntroWizardScreen());
           }else{
@@ -165,9 +164,9 @@ class _ChoceLanguageScreenState extends State<ChoceLanguageScreen> {
     ));
   }
 
-  void getRegions(){
+   getRegions()async{
     Constants.STATES.clear();
-    regionsApi!.getRegions().then((value) {
+    await regionsApi!.getRegions().then((value) {
       Constants.REGIONS=value.data;
       for(int i=0;i<Constants.REGIONS.length;i++){
         Constants.STATES.addAll( Constants.REGIONS[i].getStates!);
@@ -175,8 +174,8 @@ class _ChoceLanguageScreenState extends State<ChoceLanguageScreen> {
     });
 
   }
-  void getAppInfo(){
-    regionsApi!.getAppInfo().then((value) {
+   getAppInfo()async{
+    await regionsApi!.getAppInfo().then((value) {
       Constants.APP_INFO=value.data;
     });
 

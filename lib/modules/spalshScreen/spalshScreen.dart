@@ -6,9 +6,11 @@ import 'package:alefakaltawinea_animals_app/modules/baseScreen/baseScreen.dart';
 import 'package:alefakaltawinea_animals_app/modules/categories_screen/mainCategoriesScreen.dart';
 import 'package:alefakaltawinea_animals_app/modules/homeTabsScreen/homeTabsScreen.dart';
 import 'package:alefakaltawinea_animals_app/modules/homeTabsScreen/provider/intro_provider_model.dart';
+import 'package:alefakaltawinea_animals_app/modules/intro/intro_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/login/login_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/login/provider/user_provider_model.dart';
 import 'package:alefakaltawinea_animals_app/modules/registeration/registration_screen.dart';
+import 'package:alefakaltawinea_animals_app/modules/serviceProviderAccount/SpHomeScreen.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/apis.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseDimentions.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/baseTextStyle.dart';
@@ -74,6 +76,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       await adsSliderProviderModel!.getAdsSlider();
       await appStataProviderModel!.getAppActiveState(context);
       await appStataProviderModel!.getApplePayState();
+      await appStataProviderModel!.getAppUpdateState();
       if(Constants.IS_FORCE_UPDATE){
         MyUtils.basePopup(context, body: UpdateAppPopup(content: tr("update"),onOkPressed: (){
           Future.delayed(Duration(milliseconds: 100)).then((value){
@@ -86,7 +89,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         },));
       }else{
         await login();
-
       }
 
     });
@@ -184,21 +186,43 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   }
    login()async{
     await UserProviderModel().getSavedUser(context).then((value)async{
+      await FCM().openClosedAppFromNotification();
       await getRegions();
       await getAppInfo();
-      await Future.delayed(Duration(milliseconds: 1000)).then((value) async {
-        if(appStataProviderModel!.app_active_state){
-          MyUtils.navigateAsFirstScreen(context, MaintainanceScreen());
-        }else{
-          if(widget.toHome??false){
-            await FCM().openClosedAppFromNotification();
-            MyUtils.navigateReplaceCurrent(context, MainCategoriesScreen());
+      if(value){
+        if(Constants.currentUser!.userTypeId.toString()=="6"){
+          MyUtils.navigateAsFirstScreen(context, SpHomeScreen());
+        }
+        else{
+          bool isShowed=await Constants.prefs!.getBool("intro${Constants.currentUser!.id}")??false;
+          if(!isShowed&&Constants.APPLE_PAY_STATE){
+            MyUtils.navigateAsFirstScreen(context, IntroScreen());
           }else{
-            await FCM().openClosedAppFromNotification();
-            MyUtils.navigateReplaceCurrent(context, ChoceLanguageScreen());
+            if(appStataProviderModel!.app_active_state){
+              MyUtils.navigateAsFirstScreen(context, MaintainanceScreen());
+            }else{
+              if(widget.toHome??false){
+                MyUtils.navigateReplaceCurrent(context, MainCategoriesScreen());
+              }else{
+                if(value){
+                  MyUtils.navigateReplaceCurrent(context, MainCategoriesScreen());
+
+                }else{
+                  MyUtils.navigateReplaceCurrent(context, ChoceLanguageScreen());
+
+                }
+              }
+            }
           }
         }
-      });
+      }else{
+        MyUtils.navigateReplaceCurrent(context, ChoceLanguageScreen());
+      }
+
+
+
+
+
     });
   }
 }

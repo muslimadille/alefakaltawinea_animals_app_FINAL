@@ -2,6 +2,7 @@
 
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/myUtils.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../spalshScreen/maintainance_screen.dart';
@@ -24,33 +25,34 @@ class AppStataProviderModel with ChangeNotifier{
   AppStatesApi appStatesApi=AppStatesApi();
   getAppActiveState(BuildContext context) async {
     setIsLoading(true);
-    bool response =
-    await appStatesApi.getActiveState();
-    app_active_state=response;
-    if(app_active_state){
-      MyUtils.navigateAsFirstScreen(context, MaintainanceScreen());
-    }
-    notifyListeners();
-
+    final url = "https://osta-82ef0-default-rtdb.europe-west1.firebasedatabase.app/alefak_active.json";
+    Response response = await Dio().get(url);
+    app_active_state=response.data;
   }
+
+
   getApplePayState() async {
     setIsLoading(true);
-    Map<String,dynamic> response =
-    await appStatesApi.getApplePayState()  ;
-    if(response.isNotEmpty){
+    final url = "https://osta-82ef0-default-rtdb.europe-west1.firebasedatabase.app/alefak_config.json";
+    Response response = await Dio().get(url);
       if (IO.Platform.isIOS) {
-        if(Constants.APP_VERSION<response["app_version"]){
+        if(Constants.APP_VERSION<response.data["app_version"]){
           Constants.APPLE_PAY_STATE=true;
         }else{
-          Constants.APPLE_PAY_STATE=response['is_payment_enable2'];
+          Constants.APPLE_PAY_STATE=response.data['is_payment_enable2'];
         }
 
       }else{
         Constants.APPLE_PAY_STATE=true;
       }
-      notifyListeners();
-    }
 
   }
+  getAppUpdateState() async {
+    setIsLoading(true);
+    final url = "https://osta-82ef0-default-rtdb.europe-west1.firebasedatabase.app/force_update.json";
+    Response response = await Dio().get(url);
+    Constants.IS_FORCE_UPDATE=response.data;
+  }
+
 
 }

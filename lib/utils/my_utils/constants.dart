@@ -10,7 +10,7 @@ class Constants extends Object{
   static String? SELECTED_LANGUAGE="ar";
   static String? LANGUAGE_KEY="LANGUAGE_KEY";
   static String? DEVICE_TYPE="";
-  static double APP_VERSION=190;
+  static double APP_VERSION=192;
 
 
   static   SharedPreferences? prefs ;

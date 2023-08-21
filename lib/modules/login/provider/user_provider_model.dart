@@ -9,6 +9,7 @@ import 'package:alefakaltawinea_animals_app/modules/otp/otp_screem.dart';
 import 'package:alefakaltawinea_animals_app/modules/otp/phone_screen.dart';
 import 'package:alefakaltawinea_animals_app/modules/profile/data/update_profile_api.dart';
 import 'package:alefakaltawinea_animals_app/modules/registeration/data/registeration_api.dart';
+import 'package:alefakaltawinea_animals_app/modules/spalshScreen/data/regions_api.dart';
 import 'package:alefakaltawinea_animals_app/modules/spalshScreen/spalshScreen.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/apis.dart';
 import 'package:alefakaltawinea_animals_app/utils/my_utils/constants.dart';
@@ -49,6 +50,7 @@ class UserProviderModel with ChangeNotifier{
           setCurrentUserData(user);
           setIsLoading(false);
           await Constants.prefs!.setString(Constants.TOKEN_KEY!,user.token??'');
+          await RegionsApi().getAppInfo();
           if(user.userTypeId.toString()=="6"){
             MyUtils.navigateAsFirstScreen(ctx, SpHomeScreen());
           }else{
@@ -97,19 +99,6 @@ class UserProviderModel with ChangeNotifier{
         setIsLoading(false);
         await Constants.prefs!.setString(Constants.TOKEN_KEY!,Constants.currentUser!.token??"");
         Apis.TOKEN_VALUE=Constants.currentUser!.token??'';
-        if(Constants.currentUser!.userTypeId.toString()=="6"){
-          MyUtils.navigateAsFirstScreen(ctx, SpHomeScreen());
-        }else{
-          bool isShowed=await Constants.prefs!.getBool("intro${Constants.currentUser!.id}")??false;
-          if(!isShowed&&Constants.APPLE_PAY_STATE){
-            await FCM().openClosedAppFromNotification();
-            MyUtils.navigateAsFirstScreen(ctx, IntroScreen());
-          }else{
-            await FCM().openClosedAppFromNotification();
-            MyUtils.navigateAsFirstScreen(ctx, MainCategoriesScreen());
-          }
-        }
-        notifyListeners();
         return true;
       }
 

@@ -176,6 +176,7 @@ class _LoginScreenState extends State<LoginScreen> with  InputValidationMixin{
               return tr("enter_phone");
             }
           },
+          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
           decoration:  InputDecoration(
             labelText: tr("phone"),
             labelStyle:S.h2(color: Colors.grey) ,
